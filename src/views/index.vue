@@ -1,7 +1,5 @@
 <template>
   <div class="main">
-    <h1>{{ users }}</h1>
-    <span class="icon-activity"></span>
   </div>
 </template>
 
@@ -18,8 +16,11 @@ export default {
 
 <style lang="scss">
 .main {
-  @include container;
-  margin: 0 auto;
+  background-color: #f8f8ff;
+  background-image: url("public/time-bg.svg");
+  background-position: left;
+  background-repeat: no-repeat;
+  opacity: 0.5;
 }
 .icon-activity {
   color: #2196f3;
