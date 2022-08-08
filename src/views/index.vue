@@ -1,28 +1,30 @@
 <template>
-  <div class="main">
+  <div class="content">
+    <div class="content__inner">
+      <div class="content__projects">
+        fffffff
+      </div>
+      <div>
+        gdfgdfgd
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-export default {
-  computed: {
-    ...mapGetters({
-      users: "getUsers",
-    }),
-  },
-};
-</script>
-
 <style lang="scss">
-.main {
+.content {
   background-color: #f8f8ff;
-  background-image: url("public/time-bg.svg");
-  background-position: left;
-  background-repeat: no-repeat;
-  opacity: 0.5;
-}
-.icon-activity {
-  color: #2196f3;
+  &__inner {
+    @include container;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 20%);
+    grid-gap: 30px;
+  }
+  &__projects {
+    padding-top: 30px;
+    border-right: 1px solid white;
+    height: 100vh;
+  }
 }
 </style>

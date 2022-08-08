@@ -1,7 +1,9 @@
 <template>
   <div class="time-info">
-    <span class="time-info__date">{{ formatDate }}</span>
-    <span class="time-info__time">{{ formatTime }}</span>
+    <div>
+      <span class="time-info__date">{{ formatDate }}</span>
+      <span class="time-info__time">{{ formatTime }}</span>
+    </div>
   </div>
 </template>
 
@@ -52,7 +54,10 @@ export default {
 
 <style lang="scss" scoped>
 .time-info {
-  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 0;
   &__date {
     color: #6c7279;
     font-size: 14px;

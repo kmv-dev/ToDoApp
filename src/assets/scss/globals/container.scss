@@ -1,6 +1,6 @@
 @mixin container {
   width: 100%;
-  max-width: 1440px;
+  padding: 0 50px;
   @include _1500 {
     max-width: 1350px;
   }
