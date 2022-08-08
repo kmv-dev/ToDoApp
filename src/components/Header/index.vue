@@ -15,6 +15,7 @@
               type="text"
               class="header__input"
               :rules="validateName"
+              placeholder="Введите имя"
           />
           <ErrorMessage
               name="name"
@@ -76,16 +77,18 @@ export default {
       this.name = ''
     },
     removeData(){
-      removeDataToLocalStorage('userData')
-      const payload = {
-        name: '',
-        isAuth: false
+      if (confirm('Все данные будут удалены! Очистить?')) {
+        removeDataToLocalStorage('userData')
+        const payload = {
+          name: '',
+          isAuth: false
+        }
+        this.handleAddUser(payload);
+        const status = {
+          isEdit: false
+        }
+        this.handleAddEditStatus(status)
       }
-      this.handleAddUser(payload);
-      const status = {
-        isEdit: false
-      }
-      this.handleAddEditStatus(status)
     },
     validateName(values) {
       if (values) {
