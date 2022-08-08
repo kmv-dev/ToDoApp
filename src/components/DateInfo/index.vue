@@ -1,0 +1,74 @@
+<template>
+  <div class="time-info">
+    <div>
+      <span class="time-info__date">{{ formatDate }}</span>
+      <span class="time-info__time">{{ formatTime }}</span>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data(){
+    return {
+      time: null,
+      options: {
+        date: {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          weekday: 'long',
+          timezone: 'UTC',
+        },
+        time: {
+          timezone: 'UTC',
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric'
+        }
+      },
+    }
+  },
+  mounted() {
+    this.time = new Date().toLocaleTimeString('ru-Ru', this.options.time);
+    this.updateTime();
+  },
+  computed: {
+    formatDate(){
+      const date = new Date().toLocaleDateString('ru-Ru', this.options.date);
+      return date.charAt(0).toUpperCase() + date.slice(1);
+    },
+    formatTime(){
+      return this.time;
+    }
+  },
+  methods: {
+    updateTime(){
+      setInterval(() => {
+        this.time = new Date().toLocaleTimeString('ru-Ru', this.options.time)
+      }, 1000)
+    }
+  },
+}
+</script>
+
+<style lang="scss" scoped>
+.time-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 0;
+  &__date {
+    color: #6c7279;
+    font-size: 14px;
+    font-weight: 500;
+    margin-right: 10px;
+  }
+  &__time {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1a1a1a;
+    letter-spacing: 1px;
+  }
+}
+</style>

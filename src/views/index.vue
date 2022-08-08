@@ -1,27 +1,30 @@
 <template>
-  <div class="main">
-    <h1>{{ users }}</h1>
-    <span class="icon-activity"></span>
+  <div class="content">
+    <div class="content__inner">
+      <div class="content__projects">
+        fffffff
+      </div>
+      <div>
+        gdfgdfgd
+      </div>
+    </div>
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-export default {
-  computed: {
-    ...mapGetters({
-      users: "getUsers",
-    }),
-  },
-};
-</script>
-
 <style lang="scss">
-.main {
-  @include container;
-  margin: 0 auto;
-}
-.icon-activity {
-  color: #2196f3;
+.content {
+  background-color: #f8f8ff;
+  &__inner {
+    @include container;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 20%);
+    grid-gap: 30px;
+  }
+  &__projects {
+    padding-top: 30px;
+    border-right: 1px solid white;
+    height: 100vh;
+  }
 }
 </style>
