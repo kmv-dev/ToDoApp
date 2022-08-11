@@ -25,10 +25,10 @@
           v-if="isEdit"
           v-model="newName"
           name="name"
-          :rules="validateName"
-          class="greet__input"
           type="text"
-          placeholder="Введите новое имя"
+          class="greet__input"
+          :rules="validateName"
+          placeholder="Введите имя"
       />
       <ErrorMessage
           name="name"
@@ -43,8 +43,9 @@
           v-else
           class="greet__button"
           type="submit"
+
       >
-        <span class="greet__icon greet__icon_btn icon-refresh_02"></span>
+        <span class="greet__icon greet__icon_btn icon-refresh"></span>
       </button>
 
     </Form>
@@ -89,8 +90,10 @@ export default {
         isAuth: data?.isAuth
       }
       this.handleAddUser(payload);
+      this.newName = ''
     },
     editName(){
+      this.newName = ''
       const payload = {
         isEdit: true
       }
@@ -113,20 +116,20 @@ export default {
       if (values) {
         return true;
       }
-      return 'Недопустимое значение';
+      return 'Пустое значение';
     },
   }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .greet {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #d9dbe9;
   &:hover {
     .greet__icon {
-      display: block;
+      opacity: 1;
+      transform: translateX(0px);
     }
   }
   &__form {
@@ -136,6 +139,7 @@ export default {
   &__input {
     background: transparent;
     border: none;
+    border-bottom: 1px solid #d9dbe9;
     &::placeholder {
       font-size: 14px;
     }
@@ -146,15 +150,18 @@ export default {
   &__name {
     margin-right: 2px;
     font-weight: bold;
-    color: #5868ff;
+    color: #ff725e;
   }
   &__icon {
-    display: none;
+    transform: translateX(10px);
+    opacity: 0;
     font-size: 16px;
     color: #8f8f8f;
     margin-left: 10px;
     cursor: pointer;
+    transition: 0.1s ease-in-out;
     &_btn {
+      opacity: 1;
       font-size: 20px;
     }
   }

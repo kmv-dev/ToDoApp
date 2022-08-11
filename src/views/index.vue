@@ -1,15 +1,22 @@
 <template>
   <div class="content">
     <div class="content__inner">
-      <div class="content__projects">
-        fffffff
-      </div>
-      <div>
-        gdfgdfgd
-      </div>
+      <ProjectsList />
+      <TasksList />
     </div>
   </div>
 </template>
+
+<script>
+import ProjectsList from '@/components/ProjectsList/index.vue'
+import TasksList from '@/components/TasksList/index.vue'
+export default {
+  components: {
+    ProjectsList,
+    TasksList
+  }
+}
+</script>
 
 <style lang="scss">
 .content {
@@ -17,9 +24,10 @@
   &__inner {
     @include container;
     margin: 0 auto;
+    padding-top: 30px;
     display: grid;
-    grid-template-columns: repeat(2, 20%);
-    grid-gap: 30px;
+    grid-template-columns: 1fr 4fr;
+    grid-gap: 20px;
   }
   &__projects {
     padding-top: 30px;

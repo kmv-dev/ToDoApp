@@ -23,7 +23,7 @@
           />
           <button class="header__button">Get started</button>
         </Form>
-        <HelloUser />
+        <HelloUser/>
         <button
             v-if="isAuth"
             class="header__button header__button_logout"
@@ -77,7 +77,7 @@ export default {
       this.name = ''
     },
     removeData(){
-      if (confirm('Все данные будут удалены! Очистить?')) {
+      if (confirm('Все данные будут удалены! Выйти и очистить?')) {
         removeDataToLocalStorage('userData')
         const payload = {
           name: '',
@@ -88,6 +88,7 @@ export default {
           isEdit: false
         }
         this.handleAddEditStatus(status)
+        this.isClear = true
       }
     },
     validateName(values) {
@@ -106,7 +107,7 @@ export default {
   justify-content: center;
   background: #ffffff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-  box-shadow: 0 0 15px rgb(88, 104, 255, 15%);
+  box-shadow: 0 0 15px rgb(0, 0, 0, 12%);
   z-index: 1000;
   &__inner {
     @include container;
@@ -121,6 +122,7 @@ export default {
   &__action {
     display: flex;
     justify-content: flex-end;
+    align-items: end;
   }
   &__form {
     position: relative;
@@ -138,14 +140,20 @@ export default {
     background: #fdc344;
     color: #ffffff;
     font-weight: 500;
-    transition: 0.3s ease-in-out;
+    transition: 0.1s ease-in-out;
     box-shadow: 0 4px 5px 0 rgb(0 0 0 / 10%), 0 1px 10px 0 rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 20%);
     &:hover {
       transform: translatey(1px);
       box-shadow: none;
     }
     &_logout {
+      background-color: #2e3e50;
       margin-left: 20px;
+      opacity: 0.5;
+      &:hover {
+        background: red;
+        opacity: 0.7;
+      }
     }
   }
 }
