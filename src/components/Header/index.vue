@@ -21,7 +21,9 @@
               name="name"
               class="error-message"
           />
-          <button class="header__button">Get started</button>
+          <BaseButton>
+            Get started
+          </BaseButton>
         </Form>
         <HelloUser/>
         <button
@@ -105,7 +107,6 @@ export default {
 .header {
   display: flex;
   justify-content: center;
-  background: #ffffff;
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   box-shadow: 0 0 15px rgb(0, 0, 0, 12%);
   z-index: 1000;
@@ -126,6 +127,8 @@ export default {
   }
   &__form {
     position: relative;
+    display: flex;
+    align-items: center;
   }
   &__input {
     border: none;
@@ -147,12 +150,12 @@ export default {
       box-shadow: none;
     }
     &_logout {
-      background-color: #2e3e50;
+      background-color: #F3F3F3;
+      color: #5787A4;
       margin-left: 20px;
-      opacity: 0.5;
       &:hover {
-        background: red;
-        opacity: 0.7;
+        background: #7D859A;
+        color: white;
       }
     }
   }

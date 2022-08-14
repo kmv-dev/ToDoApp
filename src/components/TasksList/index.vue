@@ -1,6 +1,16 @@
 <template>
   <div class="tasks">
-    <h4>#{{ getProjectData[0]?.name }}</h4>
+    <div class="tasks__header">
+      <h4>#{{ getProjectData[0]?.name }}</h4>
+      <BaseButton
+          :isIcon="true"
+          :iconClass="'icon-plus_square'"
+          class="tasks__add-btn"
+          :disabled="true"
+      >
+        Новая задача
+      </BaseButton>
+    </div>
     <div class="tasks__inner">
       <input
           v-model="taskName"
@@ -47,7 +57,7 @@ export default {
       handleAddTasks: 'addTask'
     }),
     addTask(id){
-      function getRandomInt(min, max) {
+      function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
@@ -55,7 +65,7 @@ export default {
       const payload = {
         name: this.taskName,
         projectId: id,
-        taskId: getRandomInt(0, 8987699988876)
+        taskId: getRandomId(0, 8987699988876)
       }
       addTaskToProject('tasks', payload)
       this.updateTasks(id)
@@ -74,7 +84,17 @@ export default {
   padding: 15px;
   width: 100%;
   border-radius: 8px;
-  background-color: rgba(255,255,255,.7);
-  box-shadow: 0 0 5px rgba(0,0,0,.07);
+  background-color: #ffffff;
+  box-shadow: 0 0 15px rgba(0,0,0,.07);
+  &__header {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    border-bottom: 1px solid #d9dbe9;
+  }
+  &__add-btn {
+    margin-bottom: 10px;
+  }
 }
 </style>

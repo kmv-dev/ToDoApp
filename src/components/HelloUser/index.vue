@@ -150,7 +150,7 @@ export default {
   &__name {
     margin-right: 2px;
     font-weight: bold;
-    color: #ff725e;
+    color: #22a3fb;
   }
   &__icon {
     transform: translateX(10px);

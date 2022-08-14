@@ -9,30 +9,30 @@
 <style lang="scss" scoped>
 .logo {
   &__item {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     &_black {
-      color: black;
+      color: #373435;
     }
     &_blue {
       position: relative;
-      color: #48b7ff;
+      color: #f8a915;
       &:after {
         position: absolute;
         content: '';
-        width: 8px;
+        width: 10px;
         height: 1px;
-        right: -24px;
+        right: -23px;
         bottom: 2px;
         border-radius: 2px;
-        background: black;
+        background: #373435;
         animation: shakeing infinite ease-in-out;
         animation-duration: 1s;
       }
     }
     &_violet {
       display: inline-block;
-      color: #5868ff;
+      color: #dd2651;
       animation: hit infinite ease-in-out;
       animation-duration: 1s;
     }
