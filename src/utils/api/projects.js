@@ -1,4 +1,4 @@
-export const addProjectToLocalStorage = (localStorageKey, payload) => {
+export const addDataToLocalStorage = (localStorageKey, payload) => {
     let todoArray = [];
     let localStorageData = localStorage.getItem(localStorageKey);
 
@@ -11,34 +11,17 @@ export const addProjectToLocalStorage = (localStorageKey, payload) => {
     const createItemObj = (arr) => {
         const itemObj = {};
         itemObj.name = payload.name;
-        itemObj.id = payload.id;
-
+        if(payload.taskId) {
+            itemObj.projectId = payload.projectId;
+            itemObj.taskId = payload.taskId;
+            itemObj.done = false;
+        } else {
+            itemObj.id = payload.id;
+        }
         arr.push(itemObj);
     }
     createItemObj(todoArray);
     localStorage.setItem(localStorageKey, JSON.stringify(todoArray));
-}
-
-export const addTaskToProject = (localStorageKey, payload) => {
-    let taskArray = [];
-    let localStorageData = localStorage.getItem(localStorageKey);
-
-    if (localStorageData == null) {
-        taskArray = [];
-    } else {
-        taskArray = JSON.parse(localStorageData);
-    }
-
-    const createItemObj = (arr) => {
-        const itemObj = {};
-        itemObj.name = payload.name;
-        itemObj.projectId = payload.projectId;
-        itemObj.taskId = payload.taskId;
-        itemObj.done = false;
-        arr.push(itemObj);
-    }
-    createItemObj(taskArray);
-    localStorage.setItem(localStorageKey, JSON.stringify(taskArray));
 }
 
 export const getProjectFromLocalStorage = (localStorageKey) => {

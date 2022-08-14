@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { addTaskToProject, getProjectFromLocalStorage } from "../../utils/api/projects";
+import { addDataToLocalStorage, getProjectFromLocalStorage } from "../../utils/api/projects";
 import {mapActions, mapGetters} from "vuex";
 
 export default {
@@ -67,7 +67,7 @@ export default {
         projectId: id,
         taskId: getRandomId(0, 8987699988876)
       }
-      addTaskToProject('tasks', payload)
+      addDataToLocalStorage('tasks', payload)
       this.updateTasks(id)
     },
     updateTasks(id){
