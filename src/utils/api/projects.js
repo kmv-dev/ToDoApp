@@ -47,11 +47,7 @@ export const getProjectFromLocalStorage = (localStorageKey) => {
 }
 
 export const removeProjectToLocalStorage = (localStorageKey, id) => {
-    if (confirm('Вы уверены?')) {
         const todoArray = JSON.parse(localStorage.getItem(localStorageKey));
-
         const neaList = todoArray.filter(obj => obj.id !== id);
-
         localStorage.setItem(localStorageKey, JSON.stringify(neaList));
-    }
 }

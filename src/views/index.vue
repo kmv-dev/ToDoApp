@@ -20,7 +20,7 @@ export default {
 
 <style lang="scss">
 .content {
-  background-color: #f8f8ff;
+  background: linear-gradient(115.67deg, #f2f2f2 7.14%, #d9dbde 170.42%);
   &__inner {
     @include container;
     margin: 0 auto;

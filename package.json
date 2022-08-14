@@ -10,9 +10,9 @@
   "dependencies": {
     "vee-validate": "^4.6.4",
     "vue": "^3.2.37",
+    "vue-loader": "^17.0.0",
     "vue-router": "^4.1.2",
-    "vuex": "^4.0.2",
-    "yup": "^0.32.11"
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",

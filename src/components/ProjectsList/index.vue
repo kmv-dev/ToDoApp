@@ -1,33 +1,48 @@
 <template>
   <div class="projects">
+    <BaseModal
+        v-model:isShow="modalVisible"
+    >
+      <h2>fsdfgdggdf</h2>
+      <input
+          v-model="projectName"
+          type="text"
+          class="projects__input"
+          placeholder="Списки"
+      >
+      <BaseButton
+          :isIcon="true"
+          :iconClass="'icon-add_to_queue'"
+          class="title__icon title__icon_plus"
+          @click="addProject"
+      />
+    </BaseModal>
     <div class="projects__title-box title">
       <div class="title__inner">
         <span class="title__icon icon-List_alt"></span>
-        <input
-            v-model="projectName"
-            type="text"
-            class="projects__input"
-            placeholder="Добавить задачу"
-        >
+        <span class="title__text">Списки</span>
       </div>
-      <span
-          class="title__icon title__icon_plus icon-plus"
-          @click="addProject"
+      <BaseButton
+          :isIcon="true"
+          :iconClass="'icon-add_to_queue'"
+          class="title__icon title__icon_plus"
+          @click="openModalAddProject"
       />
     </div>
     <div
         class="projects__items"
-        v-for="item in projects"
-        :key="item.id"
     >
-      <TransitionGroup name="fade" tag="span">
+      <TransitionGroup name="list" tag="span">
         <div
-          class="projects__item item"
-          :key="item.id"
-          @click="getProjectTasks(item.id)"
+            class="projects__item item"
+            v-for="item in projects"
+            :key="item.id"
         >
-          <div class="item__inner">
-            <span>#</span>
+          <div
+              class="item__inner"
+              @click="getProjectTasks(item.id)"
+          >
+            <span class="item__lattice">#</span>
             <span>{{ item.name }}</span>
           </div>
           <span
@@ -47,7 +62,8 @@ export default {
   data(){
     return {
       projectName: '',
-      projects: []
+      projects: [],
+      modalVisible: false
     }
   },
   mounted() {
@@ -68,23 +84,26 @@ export default {
     },
     addProject(){
       if(this.projectName) {
-        function getRandomInt(min, max) {
+        function getRandomId(min, max) {
           min = Math.ceil(min);
           max = Math.floor(max);
           return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
         }
         const payload = {
           name: this.projectName,
-          id: getRandomInt(0, 89755738883)
+          id: getRandomId(0, 89755738883)
         }
         addProjectToLocalStorage('projects', payload)
         this.updateProjectsList();
         this.projectName = ''
+        this.modalVisible = false
       }
     },
     deleteProject(id){
-      removeProjectToLocalStorage('projects', id)
-      this.updateProjectsList();
+      if(confirm('Уверен?')){
+        removeProjectToLocalStorage('projects', id)
+        this.updateProjectsList();
+      }
     },
     getProjectTasks(id){
       const data = getProjectFromLocalStorage('projects')
@@ -98,8 +117,10 @@ export default {
         this.addTaskDataToStore(filterTasks)
       }
       this.updateProjectsList();
-      console.log(this.getData)
     },
+    openModalAddProject(){
+      this.modalVisible = true
+    }
   }
 }
 </script>
@@ -107,29 +128,28 @@ export default {
 <style lang="scss" scoped>
 .projects {
   padding: 15px;
-  background-color: rgba(255,255,255,.7);
+  background-color: #ffffff;
   border-radius: 8px;
   position: relative;
-  border-right: 2px solid white;
   height: 700px;
-  background-image: url("./public/project-bg.svg");
-  background-size: 100%;
+  background-image: url("./public/123.svg");
+  background-size: 120%;
   background-repeat: no-repeat;
-  background-position: bottom;
-  box-shadow: 0 0 5px rgba(0,0,0,.07);
+  background-position: bottom left;
+  box-shadow: 0 0 15px rgba(0,0,0,.07);
   &__input {
     background: none;
     border: none;
     &::placeholder {
-      color: black;
+      color: #465a64;
       font-size: 14px;
+      font-weight: bold;
     }
   }
   &__title-box {
     display: flex;
     justify-content: space-between;
     align-items: end;
-    border-bottom: 1px solid #d9dbe9;
     padding-bottom: 5px;
     margin-bottom: 15px;
   }
@@ -139,58 +159,78 @@ export default {
       align-items: end;
     }
     &__text {
-      font-weight: 500;
-      color: black;
+      font-size: 14px;
+      font-weight: bold;
+      color: #373435;
       margin-bottom: -2px;
     }
     &__icon {
-      color: #48b7ff;
-      font-size: 26px;
+      color: #339966;
+      font-size: 22px;
       margin-right: 2px;
       &_plus {
-        position: relative;
-        color: rgba(0,0,0, 0.5);
-        cursor: pointer;
-        transition: 0.2s ease-in-out;
-        z-index: 10;
-        &:hover {
-          color: #1ea665;
-        }
+        color: #ffffff;
+        font-size: 18px;
       }
     }
   }
   &__item {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 5px;
-    border-bottom: 1px dotted #000000;
     margin-bottom: 5px;
-    font-weight: bold;
-    &:hover {
-      .item__icon {
-        display: block;
-      }
+    color: #555555;
+    font-size: 14px;
+    cursor: pointer;
+    &:before {
+      position: absolute;
+      content: '';
+      width: 100%;
+      height: 0.5px;
+      left: 0;
+      bottom: 0;
+      background-color: #E0E0E0;
+      transition: 0.1s ease-in-out;
+    }
+    &:hover:before{
+      transform: translateX(5px);
+      background-color: #7D859A;
     }
   }
   .item {
+    &__inner {
+      flex-grow: 1;
+    }
     &__icon {
-      display: none;
+      flex-grow: 0;
+      color: #7D859A;
       cursor: pointer;
+    }
+    &__lattice {
+      color: #339966;
+      font-size: 12px;
+      font-weight: bold;
     }
   }
 }
-.fade-move,
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
 }
-.fade-enter-from,
-.fade-leave-to {
+.list-enter-from {
   opacity: 0;
-  transform: scaleY(0.01) translate(30px, 0);
+  transform: translateY(-20px);
 }
-.fade-leave-active {
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.list-leave-active {
   position: absolute;
+  width: calc(100% - 30px);
 }
 </style>
