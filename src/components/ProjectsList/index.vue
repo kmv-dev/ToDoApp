@@ -2,20 +2,23 @@
   <div class="projects">
     <BaseModal
         v-model:isShow="modalVisible"
+        class="projects__modal modal"
+        :title="'Добавить новый список'"
     >
-      <h2>fsdfgdggdf</h2>
       <input
           v-model="projectName"
           type="text"
-          class="projects__input"
-          placeholder="Списки"
+          class="modal__input"
+          placeholder="Название списка"
       >
-      <BaseButton
-          :isIcon="true"
-          :iconClass="'icon-add_to_queue'"
-          class="title__icon title__icon_plus"
-          @click="addProject"
-      />
+      <template #buttonAction>
+        <BaseButton
+            @click="addProject"
+            class="modal__btn"
+        >
+          Добавить
+        </BaseButton>
+      </template>
     </BaseModal>
     <div class="projects__title-box title">
       <div class="title__inner">
@@ -40,7 +43,7 @@
         >
           <div
               class="item__inner"
-              @click="getProjectTasks(item.id)"
+              @click="getProjectData(item.id)"
           >
             <span class="item__lattice">#</span>
             <span>{{ item.name }}</span>
@@ -56,7 +59,7 @@
 </template>
 
 <script>
-import { addProjectToLocalStorage, getProjectFromLocalStorage, removeProjectToLocalStorage } from "../../utils/api/projects";
+import { addDataToLocalStorage, getProjectFromLocalStorage, removeProjectToLocalStorage } from "../../utils/api/projects";
 import {mapActions, mapGetters} from "vuex";
 export default {
   data(){
@@ -66,12 +69,24 @@ export default {
       modalVisible: false
     }
   },
-  mounted() {
-    this.updateProjectsList();
+  watch: {
+    modalVisible(){
+      this.projectName = ''
+    }
+  },
+  async mounted() {
+    try {
+      await this.updateProjectsList();
+      if (this.projects) {
+        this.getProjectData(this.projects[0].id)
+      }
+    } catch (e) {
+      console.log(e)
+    }
   },
   computed: {
     ...mapGetters({
-      getData: 'getProjectData'
+      getData: 'getProjectData',
     })
   },
   methods: {
@@ -93,8 +108,9 @@ export default {
           name: this.projectName,
           id: getRandomId(0, 89755738883)
         }
-        addProjectToLocalStorage('projects', payload)
+        addDataToLocalStorage('projects', payload)
         this.updateProjectsList();
+        this.getProjectData(this.projects[0]?.id)
         this.projectName = ''
         this.modalVisible = false
       }
@@ -105,22 +121,22 @@ export default {
         this.updateProjectsList();
       }
     },
-    getProjectTasks(id){
+    getProjectData(id){
       const data = getProjectFromLocalStorage('projects')
       const tasks = getProjectFromLocalStorage('tasks')
       if (data.length){
         const newArr = data.filter(obj => obj.id === id);
         this.addProjectDataToStore(newArr)
       }
-      if (tasks.length){
+      if (tasks?.length){
         const filterTasks = tasks.filter(obj => obj.projectId === id);
         this.addTaskDataToStore(filterTasks)
       }
-      this.updateProjectsList();
     },
     openModalAddProject(){
       this.modalVisible = true
-    }
+      document.body.style.overflow = 'hidden';
+    },
   }
 }
 </script>
@@ -137,15 +153,6 @@ export default {
   background-repeat: no-repeat;
   background-position: bottom left;
   box-shadow: 0 0 15px rgba(0,0,0,.07);
-  &__input {
-    background: none;
-    border: none;
-    &::placeholder {
-      color: #465a64;
-      font-size: 14px;
-      font-weight: bold;
-    }
-  }
   &__title-box {
     display: flex;
     justify-content: space-between;
@@ -212,6 +219,15 @@ export default {
       color: #339966;
       font-size: 12px;
       font-weight: bold;
+    }
+  }
+  .modal {
+    &__input {
+      width: 100%;
+      padding: 10px 5px;
+      background: transparent;
+      border: 1px solid #27b5fe;
+      border-radius: 8px;
     }
   }
 }
