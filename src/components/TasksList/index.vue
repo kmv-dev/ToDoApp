@@ -34,7 +34,7 @@
       </template>
     </BaseModal>
     <div class="tasks__header">
-      <h4>#{{ currentProjectName }}</h4>
+      <h4>#{{ getProjectData[0]?.name }}</h4>
       <BaseButton
           :isIcon="true"
           :iconClass="'icon-plus_square'"
@@ -79,12 +79,6 @@ export default {
       clear: false
     }
   },
-  watch: {
-    isClearData(){
-      this.updateTasks();
-      this.clear = true
-    }
-  },
   mounted() {
     this.updateTasks();
   },
@@ -92,15 +86,8 @@ export default {
     ...mapGetters({
       getProjectData: 'getProjectData',
       getTasks: 'getTasks',
-      isClearData: 'getClearLocalDataStatus',
       isAuth: 'getAuthStatus'
     }),
-    currentProjectName(){
-      if(this.clear){
-        return ''
-      }
-      return this.getProjectData[0]?.name
-    }
   },
   methods: {
     ...mapActions({
@@ -110,7 +97,7 @@ export default {
       function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+        return Math.floor(Math.random() * (max - min)) + min;
       }
       const payload = {
         name: this.taskName,

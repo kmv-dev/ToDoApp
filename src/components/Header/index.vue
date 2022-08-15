@@ -68,7 +68,6 @@ export default {
     ...mapActions({
       handleAddUser: 'addUser',
       handleAddEditStatus:'addEditStatus',
-      handleSetClearLocalStatus: 'clearLocalData'
     }),
     addUser(){
       const payload = {
@@ -93,7 +92,7 @@ export default {
           isEdit: false
         }
         this.handleAddEditStatus(status)
-        this.handleSetClearLocalStatus(true)
+        location.reload();
       }
     },
     validateName(values) {

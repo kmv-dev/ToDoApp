@@ -6,7 +6,4 @@ export default {
     setEditStatus( state, isEdit ) {
         state.user.isEditStatus = isEdit;
     },
-    setClearLocalData( state, isClear ) {
-        state.isClearLocalData = isClear
-    }
 };

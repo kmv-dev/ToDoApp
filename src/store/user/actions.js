@@ -5,7 +5,4 @@ export default {
     addEditStatus({ commit }, { isEdit } ) {
         commit('setEditStatus', isEdit)
     },
-    clearLocalData({ commit }, isClear){
-        commit('setClearLocalData', isClear)
-    }
 };
