@@ -5,15 +5,28 @@
         class="projects__modal modal"
         :title="'Добавить новый список'"
     >
-      <input
-          v-model="projectName"
-          type="text"
-          class="modal__input"
-          placeholder="Название списка"
+      <Form
+          id="modal-project"
+          class="modal__form"
+          @submit="addProject"
       >
+        <Field
+            v-model="projectName"
+            type="text"
+            class="modal__input"
+            placeholder="Название списка"
+            name="projectName"
+            :rules="validateName"
+        />
+        <ErrorMessage
+            name="projectName"
+            class="error-message"
+        />
+      </Form>
       <template #buttonAction>
         <BaseButton
-            @click="addProject"
+            form="modal-project"
+            :type="'submit'"
             class="modal__btn"
         >
           Добавить
@@ -30,23 +43,26 @@
           :iconClass="'icon-add_to_queue'"
           class="title__icon title__icon_plus"
           @click="openModalAddProject"
+          :disabled="!isAuth"
       />
     </div>
     <div
         class="projects__items"
     >
-      <TransitionGroup name="list" tag="span">
+      <TransitionGroup name="list">
         <div
             class="projects__item item"
-            v-for="item in projects"
+            v-for="(item, i) in projects"
             :key="item.id"
+            :class="{ item_active: i === activeItem }"
+            @click="selectItem(i)"
         >
           <div
               class="item__inner"
               @click="getProjectData(item.id)"
           >
-            <span class="item__lattice">#</span>
-            <span>{{ item.name }}</span>
+            <span class="item__arrow icon-long_right"></span>
+            <span class="item__name">{{ item.name }}</span>
           </div>
           <span
               class="item__icon icon-trash_full"
@@ -54,31 +70,54 @@
           />
         </div>
       </TransitionGroup>
+      <div
+          v-if="!this.projects?.[0]"
+          class="projects__empty empty"
+      >
+        <span class="empty__title">Нет списков</span>
+        <span class="empty__icon icon-sad"></span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { addDataToLocalStorage, getProjectFromLocalStorage, removeProjectToLocalStorage } from "../../utils/api/projects";
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import {
+  addDataToLocalStorage,
+  getProjectFromLocalStorage,
+  removeProjectToLocalStorage,
+  removeTasksToLocalStorage
+} from "../../utils/api/projects";
 import {mapActions, mapGetters} from "vuex";
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   data(){
     return {
       projectName: '',
       projects: [],
-      modalVisible: false
+      modalVisible: false,
+      test: false,
+      activeItem: 0
     }
   },
   watch: {
     modalVisible(){
       this.projectName = ''
+    },
+    isClearData(){
+      this.updateProjectsList();
     }
   },
   async mounted() {
     try {
       await this.updateProjectsList();
       if (this.projects) {
-        this.getProjectData(this.projects[0].id)
+        this.getProjectData(this.projects[0]?.id)
       }
     } catch (e) {
       console.log(e)
@@ -86,8 +125,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getData: 'getProjectData',
-    })
+      isAuth: 'getAuthStatus',
+      isClearData: 'getClearLocalDataStatus'
+    }),
   },
   methods: {
     ...mapActions({
@@ -115,9 +155,18 @@ export default {
         this.modalVisible = false
       }
     },
-    deleteProject(id){
+    async deleteProject(id){
       if(confirm('Уверен?')){
-        removeProjectToLocalStorage('projects', id)
+        await removeProjectToLocalStorage('projects', id)
+        await removeTasksToLocalStorage('tasks', id)
+        const data = await getProjectFromLocalStorage('projects')
+        const tasks = await getProjectFromLocalStorage('tasks')
+        const newArr = data.filter(obj => obj.id === id);
+        await this.addProjectDataToStore(newArr)
+        if(tasks !== null) {
+          const filterTasks = tasks.filter(obj => obj.projectId === id);
+          await this.addTaskDataToStore(filterTasks)
+        }
         this.updateProjectsList();
       }
     },
@@ -133,9 +182,18 @@ export default {
         this.addTaskDataToStore(filterTasks)
       }
     },
+    selectItem(i) {
+      this.activeItem = i;
+    },
     openModalAddProject(){
       this.modalVisible = true
       document.body.style.overflow = 'hidden';
+    },
+    validateName(values) {
+      if (values) {
+        return true;
+      }
+      return 'Заполните поле';
     },
   }
 }
@@ -181,12 +239,42 @@ export default {
       }
     }
   }
+  &__empty{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .empty {
+    padding-top: 200px;
+    color: #d9dbde;
+    &__title {
+      font-size: 20px;
+    }
+    &__icon {
+      font-size: 28px;
+    }
+  }
+  &__items {
+    max-height: 430px;
+    overflow-y: auto;
+    padding-right: 8px;
+    &::-webkit-scrollbar {
+      height: 3px;
+      width: 4px;
+      border-radius: 100px;
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(125, 133, 154, 0.3);
+      border-radius: 100px;
+    }
+  }
   &__item {
     position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px;
+    padding: 0 5px;
     margin-bottom: 5px;
     color: #555555;
     font-size: 14px;
@@ -209,19 +297,44 @@ export default {
   .item {
     &__inner {
       flex-grow: 1;
+      padding: 5px 0;
     }
     &__icon {
       flex-grow: 0;
       color: #7D859A;
       cursor: pointer;
     }
-    &__lattice {
+    &__arrow {
+      position: absolute;
+      left: -20px;
+      top: 7px;
       color: #339966;
-      font-size: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: 0.2s ease-in-out;
+    }
+    &__name {
+      color: rgba(125, 133, 154, 0.8);
+      font-size: 14px;
+      transition: 0.2s ease-in-out;
+      font-weight: 500;
+    }
+    &_active .item__arrow {
+      font-size: 18px;
+      display: inline-block;
+      transform: translateX(22px);
+    }
+    &_active .item__name {
+      color: #1a1a1a;
+      display: inline-block;
+      transform: translateX(18px);
       font-weight: bold;
     }
   }
   .modal {
+    &__form {
+      position: relative;
+    }
     &__input {
       width: 100%;
       padding: 10px 5px;
@@ -248,5 +361,12 @@ export default {
 .list-leave-active {
   position: absolute;
   width: calc(100% - 30px);
+}
+.error-message {
+  position: absolute;
+  bottom: -18px;
+  left: 0;
+  font-size: 12px;
+  color: red;
 }
 </style>
