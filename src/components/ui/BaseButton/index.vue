@@ -66,10 +66,12 @@ export default {
   color: white;
   font-size: 14px;
   box-shadow: 0 4px 5px 0 rgb(0 0 0 / 10%), 0 1px 10px 0 rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 20%);
+  transition: 0.3s ease-in-out;
   &__icon {
     margin-right: 5px;
   }
   &_disabled {
+    pointer-events: none;
     opacity: 0.5;
   }
 }

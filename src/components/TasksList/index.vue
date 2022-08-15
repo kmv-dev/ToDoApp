@@ -1,34 +1,62 @@
 <template>
   <div class="tasks">
+    <BaseModal
+        v-model:isShow="modalVisible"
+        class="projects__modal modal"
+        :title="'Добавить новый список'"
+    >
+      <Form
+          id="modal-tasks"
+          class="modal__form"
+          @submit="addTask(getProjectData[0].id)"
+      >
+        <Field
+            v-model="taskName"
+            type="text"
+            class="modal__input"
+            placeholder="Название списка"
+            name="taskName"
+            :rules="validateName"
+        />
+        <ErrorMessage
+            name="projectName"
+            class="error-message"
+        />
+      </Form>
+      <template #buttonAction>
+        <BaseButton
+            form="modal-tasks"
+            :type="'submit'"
+            class="modal__btn"
+        >
+          Добавить
+        </BaseButton>
+      </template>
+    </BaseModal>
     <div class="tasks__header">
-      <h4>#{{ getProjectData[0]?.name }}</h4>
+      <h4>#{{ currentProjectName }}</h4>
       <BaseButton
           :isIcon="true"
           :iconClass="'icon-plus_square'"
           class="tasks__add-btn"
-          :disabled="true"
+          :disabled="!getProjectData[0]?.name || !isAuth"
+          @click="openModalAddTask"
       >
         Новая задача
       </BaseButton>
     </div>
-    <div class="tasks__inner">
-      <input
-          v-model="taskName"
-          type="text"
-          class="tasks__input"
-          placeholder="Добавить задачу"
-      >
-    </div>
-    <span
-        class="tasks__icon title__icon_plus icon-plus"
-        @click="addTask(getProjectData[0].id)"
-    />
-
     <div
         v-for="item in getTasks"
         :key="item.taskId"
     >
       <span>{{ item }}</span>
+    </div>
+    <div
+        v-if="!getTasks?.[0]"
+        class="tasks__empty empty"
+    >
+      <span class="empty__text">Тут пока ничего нет, создайте задачу</span>
+      <span class="empty__icon icon-orders"></span>
     </div>
   </div>
 </template>
@@ -36,11 +64,25 @@
 <script>
 import { addDataToLocalStorage, getProjectFromLocalStorage } from "../../utils/api/projects";
 import {mapActions, mapGetters} from "vuex";
+import {ErrorMessage, Field, Form} from "vee-validate";
 
 export default {
+  components: {
+    Form,
+    Field,
+    ErrorMessage
+  },
   data(){
     return {
-      taskName: ''
+      taskName: '',
+      modalVisible: false,
+      clear: false
+    }
+  },
+  watch: {
+    isClearData(){
+      this.updateTasks();
+      this.clear = true
     }
   },
   mounted() {
@@ -49,8 +91,16 @@ export default {
   computed: {
     ...mapGetters({
       getProjectData: 'getProjectData',
-      getTasks: 'getTasks'
-    })
+      getTasks: 'getTasks',
+      isClearData: 'getClearLocalDataStatus',
+      isAuth: 'getAuthStatus'
+    }),
+    currentProjectName(){
+      if(this.clear){
+        return ''
+      }
+      return this.getProjectData[0]?.name
+    }
   },
   methods: {
     ...mapActions({
@@ -69,12 +119,23 @@ export default {
       }
       addDataToLocalStorage('tasks', payload)
       this.updateTasks(id)
+      this.modalVisible = false
     },
     updateTasks(id){
       const data = getProjectFromLocalStorage('tasks')
       this.tasks = data?.filter(obj => obj.projectId === id);
       this.handleAddTasks(this.tasks)
-    }
+    },
+    openModalAddTask(){
+      this.modalVisible = true
+      document.body.style.overflow = 'hidden';
+    },
+    validateName(values) {
+      if (values) {
+        return true;
+      }
+      return 'Заполните поле';
+    },
   }
 }
 </script>
@@ -95,6 +156,21 @@ export default {
   }
   &__add-btn {
     margin-bottom: 10px;
+  }
+  &__empty{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .empty {
+    padding-top: 200px;
+    color: #d9dbde;
+    &__title {
+      font-size: 20px;
+    }
+    &__icon {
+      font-size: 58px;
+    }
   }
 }
 </style>

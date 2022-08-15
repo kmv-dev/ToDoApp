@@ -1,9 +1,12 @@
 export default {
-    setNewUserData(state, { name, isAuth }) {
+    setNewUserData( state, { name, isAuth }) {
         state.user.name = name;
         state.user.isAuth = isAuth;
     },
-    setEditStatus(state, isEdit){
+    setEditStatus( state, isEdit ) {
         state.user.isEditStatus = isEdit;
+    },
+    setClearLocalData( state, isClear ) {
+        state.isClearLocalData = isClear
     }
 };

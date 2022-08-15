@@ -67,7 +67,8 @@ export default {
   methods: {
     ...mapActions({
       handleAddUser: 'addUser',
-      handleAddEditStatus:'addEditStatus'
+      handleAddEditStatus:'addEditStatus',
+      handleSetClearLocalStatus: 'clearLocalData'
     }),
     addUser(){
       const payload = {
@@ -81,6 +82,8 @@ export default {
     removeData(){
       if (confirm('Все данные будут удалены! Выйти и очистить?')) {
         removeDataToLocalStorage('userData')
+        removeDataToLocalStorage('projects')
+        removeDataToLocalStorage('tasks')
         const payload = {
           name: '',
           isAuth: false
@@ -90,7 +93,7 @@ export default {
           isEdit: false
         }
         this.handleAddEditStatus(status)
-        this.isClear = true
+        this.handleSetClearLocalStatus(true)
       }
     },
     validateName(values) {
