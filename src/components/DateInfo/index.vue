@@ -8,34 +8,20 @@
 </template>
 
 <script>
+import { OPTIONS } from '@/utils/constants/dateOptions.js'
 export default {
   data(){
     return {
       time: null,
-      options: {
-        date: {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          weekday: 'long',
-          timezone: 'UTC',
-        },
-        time: {
-          timezone: 'UTC',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric'
-        }
-      },
     }
   },
   mounted() {
-    this.time = new Date().toLocaleTimeString('ru-Ru', this.options.time);
+    this.time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time);
     this.updateTime();
   },
   computed: {
     formatDate(){
-      const date = new Date().toLocaleDateString('ru-Ru', this.options.date);
+      const date = new Date().toLocaleDateString('ru-Ru', OPTIONS.date);
       return date.charAt(0).toUpperCase() + date.slice(1);
     },
     formatTime(){
@@ -45,7 +31,7 @@ export default {
   methods: {
     updateTime(){
       setInterval(() => {
-        this.time = new Date().toLocaleTimeString('ru-Ru', this.options.time)
+        this.time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time)
       }, 1000)
     }
   },

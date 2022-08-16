@@ -14,6 +14,8 @@ export const addDataToLocalStorage = (localStorageKey, payload) => {
         if(payload.taskId) {
             itemObj.projectId = payload.projectId;
             itemObj.taskId = payload.taskId;
+            itemObj.description = payload.description;
+            itemObj.createDate = payload.createDate;
             itemObj.done = false;
         } else {
             itemObj.id = payload.id;
@@ -24,7 +26,7 @@ export const addDataToLocalStorage = (localStorageKey, payload) => {
     localStorage.setItem(localStorageKey, JSON.stringify(todoArray));
 }
 
-export const getProjectFromLocalStorage = (localStorageKey) => {
+export const getDataFromLocalStorage = (localStorageKey) => {
     const project = localStorage.getItem(localStorageKey);
     return JSON.parse(project);
 }
@@ -41,4 +43,17 @@ export const removeTasksToLocalStorage = (localStorageKey, id) => {
         const neaList = tasksArray.filter(obj => obj.projectId !== id);
         localStorage.setItem(localStorageKey, JSON.stringify(neaList));
     }
+}
+
+export const changeCompleteTask = (item) => {
+    const todoArray = JSON.parse(localStorage.getItem('tasks'));
+    todoArray.map(obj => {
+        if (obj.taskId === item.taskId && obj.done === false) {
+            obj.done = true;
+        } else if (obj.taskId === item.taskId && obj.done === true) {
+            obj.done = false;
+        }
+    });
+    console.log(todoArray)
+    localStorage.setItem('tasks', JSON.stringify(todoArray));
 }

@@ -84,7 +84,7 @@
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import {
   addDataToLocalStorage,
-  getProjectFromLocalStorage,
+  getDataFromLocalStorage,
   removeProjectToLocalStorage,
   removeTasksToLocalStorage
 } from "../../utils/api/projects";
@@ -129,7 +129,7 @@ export default {
       addTaskDataToStore: 'addTask',
     }),
     updateProjectsList(){
-      this.projects = getProjectFromLocalStorage('projects')?.reverse()
+      this.projects = getDataFromLocalStorage('projects')?.reverse()
     },
     addProject(){
       if(this.projectName) {
@@ -153,8 +153,8 @@ export default {
       if(confirm('Уверен?')){
         await removeProjectToLocalStorage('projects', id)
         await removeTasksToLocalStorage('tasks', id)
-        const data = await getProjectFromLocalStorage('projects')
-        const tasks = await getProjectFromLocalStorage('tasks')
+        const data = await getDataFromLocalStorage('projects')
+        const tasks = await getDataFromLocalStorage('tasks')
         const newArr = data.filter(obj => obj.id === id);
         await this.addProjectDataToStore(newArr)
         if(tasks !== null) {
@@ -166,8 +166,8 @@ export default {
       }
     },
     getProjectData(id, i){
-      const data = getProjectFromLocalStorage('projects')
-      const tasks = getProjectFromLocalStorage('tasks')
+      const data = getDataFromLocalStorage('projects')
+      const tasks = getDataFromLocalStorage('tasks')
       if (data.length){
         const newArr = data.filter(obj => obj.id === id);
         this.addProjectDataToStore(newArr)
