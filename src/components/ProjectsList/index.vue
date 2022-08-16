@@ -55,11 +55,10 @@
             v-for="(item, i) in projects"
             :key="item.id"
             :class="{ item_active: i === activeItem }"
-            @click="selectItem(i)"
         >
           <div
               class="item__inner"
-              @click="getProjectData(item.id)"
+              @click="getProjectData(item.id, i)"
           >
             <span class="item__arrow icon-long_right"></span>
             <span class="item__name">{{ item.name }}</span>
@@ -85,7 +84,7 @@
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import {
   addDataToLocalStorage,
-  getProjectFromLocalStorage,
+  getDataFromLocalStorage,
   removeProjectToLocalStorage,
   removeTasksToLocalStorage
 } from "../../utils/api/projects";
@@ -101,7 +100,6 @@ export default {
       projectName: '',
       projects: [],
       modalVisible: false,
-      test: false,
       activeItem: 0
     }
   },
@@ -109,9 +107,6 @@ export default {
     modalVisible(){
       this.projectName = ''
     },
-    isClearData(){
-      this.updateProjectsList();
-    }
   },
   async mounted() {
     try {
@@ -126,23 +121,22 @@ export default {
   computed: {
     ...mapGetters({
       isAuth: 'getAuthStatus',
-      isClearData: 'getClearLocalDataStatus'
     }),
   },
   methods: {
     ...mapActions({
       addProjectDataToStore: 'addProjectData',
-      addTaskDataToStore: 'addTask'
+      addTaskDataToStore: 'addTask',
     }),
     updateProjectsList(){
-      this.projects = getProjectFromLocalStorage('projects')?.reverse()
+      this.projects = getDataFromLocalStorage('projects')?.reverse()
     },
     addProject(){
       if(this.projectName) {
         function getRandomId(min, max) {
           min = Math.ceil(min);
           max = Math.floor(max);
-          return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+          return Math.floor(Math.random() * (max - min)) + min;
         }
         const payload = {
           name: this.projectName,
@@ -159,8 +153,8 @@ export default {
       if(confirm('Уверен?')){
         await removeProjectToLocalStorage('projects', id)
         await removeTasksToLocalStorage('tasks', id)
-        const data = await getProjectFromLocalStorage('projects')
-        const tasks = await getProjectFromLocalStorage('tasks')
+        const data = await getDataFromLocalStorage('projects')
+        const tasks = await getDataFromLocalStorage('tasks')
         const newArr = data.filter(obj => obj.id === id);
         await this.addProjectDataToStore(newArr)
         if(tasks !== null) {
@@ -168,11 +162,12 @@ export default {
           await this.addTaskDataToStore(filterTasks)
         }
         this.updateProjectsList();
+        this.getProjectData(this.projects[0]?.id)
       }
     },
-    getProjectData(id){
-      const data = getProjectFromLocalStorage('projects')
-      const tasks = getProjectFromLocalStorage('tasks')
+    getProjectData(id, i){
+      const data = getDataFromLocalStorage('projects')
+      const tasks = getDataFromLocalStorage('tasks')
       if (data.length){
         const newArr = data.filter(obj => obj.id === id);
         this.addProjectDataToStore(newArr)
@@ -181,6 +176,7 @@ export default {
         const filterTasks = tasks.filter(obj => obj.projectId === id);
         this.addTaskDataToStore(filterTasks)
       }
+      this.selectItem(i || 0)
     },
     selectItem(i) {
       this.activeItem = i;
@@ -256,6 +252,7 @@ export default {
   }
   &__items {
     max-height: 430px;
+    min-height: 430px;
     overflow-y: auto;
     padding-right: 8px;
     &::-webkit-scrollbar {

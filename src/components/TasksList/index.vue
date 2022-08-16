@@ -2,7 +2,7 @@
   <div class="tasks">
     <BaseModal
         v-model:isShow="modalVisible"
-        class="projects__modal modal"
+        class="tasks__modal modal"
         :title="'Добавить новый список'"
     >
       <Form
@@ -14,13 +14,18 @@
             v-model="taskName"
             type="text"
             class="modal__input"
-            placeholder="Название списка"
+            placeholder="Заголовок задачи"
             name="taskName"
             :rules="validateName"
         />
         <ErrorMessage
-            name="projectName"
+            name="taskName"
             class="error-message"
+        />
+        <textarea
+            v-model="description"
+            placeholder="Описание"
+            class="modal__textarea"
         />
       </Form>
       <template #buttonAction>
@@ -34,7 +39,7 @@
       </template>
     </BaseModal>
     <div class="tasks__header">
-      <h4>#{{ currentProjectName }}</h4>
+      <h4>#{{ getProjectData[0]?.name }}</h4>
       <BaseButton
           :isIcon="true"
           :iconClass="'icon-plus_square'"
@@ -46,10 +51,21 @@
       </BaseButton>
     </div>
     <div
+        v-if="getTasks"
         v-for="item in getTasks"
         :key="item.taskId"
+        class="tasks__item"
     >
-      <span>{{ item }}</span>
+      <BaseCheckbox
+          v-model="checked"
+          :value="item.taskId"
+          :id="item.taskId"
+          @change="completeTask(item, item.projectId)"
+      >
+      </BaseCheckbox>
+      <div class="item__inner">
+        <span>{{ item }}</span>
+      </div>
     </div>
     <div
         v-if="!getTasks?.[0]"
@@ -62,9 +78,9 @@
 </template>
 
 <script>
-import { addDataToLocalStorage, getProjectFromLocalStorage } from "../../utils/api/projects";
-import {mapActions, mapGetters} from "vuex";
-import {ErrorMessage, Field, Form} from "vee-validate";
+import { addDataToLocalStorage, getDataFromLocalStorage, changeCompleteTask } from "../../utils/api/projects";
+import { mapActions, mapGetters } from "vuex";
+import { ErrorMessage, Field, Form } from "vee-validate";
 
 export default {
   components: {
@@ -74,55 +90,72 @@ export default {
   },
   data(){
     return {
+      checked: [],
       taskName: '',
+      description: '',
       modalVisible: false,
-      clear: false
-    }
-  },
-  watch: {
-    isClearData(){
-      this.updateTasks();
-      this.clear = true
+      clear: false,
+      dateOptions: {
+        date: {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          weekday: 'long',
+          timezone: 'UTC',
+        },
+        time: {
+          timezone: 'UTC',
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric'
+        }
+      }
     }
   },
   mounted() {
     this.updateTasks();
+    this.checked = JSON.parse(localStorage.getItem('check')) || [];
   },
   computed: {
     ...mapGetters({
       getProjectData: 'getProjectData',
       getTasks: 'getTasks',
-      isClearData: 'getClearLocalDataStatus',
       isAuth: 'getAuthStatus'
     }),
-    currentProjectName(){
-      if(this.clear){
-        return ''
-      }
-      return this.getProjectData[0]?.name
+    createDate(){
+      const date = new Date().toLocaleDateString('ru-Ru', this.dateOptions.date);
+      const time = new Date().toLocaleTimeString('ru-Ru', this.dateOptions.time);
+      return date + ' ' + time
     }
   },
   methods: {
     ...mapActions({
       handleAddTasks: 'addTask'
     }),
+    async completeTask(item, projectId){
+      await changeCompleteTask(item)
+      localStorage.setItem('check', JSON.stringify(this.checked))
+      this.updateTasks(projectId)
+    },
     addTask(id){
       function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
+        return Math.floor(Math.random() * (max - min)) + min;
       }
       const payload = {
         name: this.taskName,
+        description: this.description,
+        createDate: this.createDate,
         projectId: id,
-        taskId: getRandomId(0, 8987699988876)
+        taskId: getRandomId(0, 8987699988876).toString()
       }
       addDataToLocalStorage('tasks', payload)
       this.updateTasks(id)
       this.modalVisible = false
     },
     updateTasks(id){
-      const data = getProjectFromLocalStorage('tasks')
+      const data = getDataFromLocalStorage('tasks')
       this.tasks = data?.filter(obj => obj.projectId === id);
       this.handleAddTasks(this.tasks)
     },
@@ -134,7 +167,7 @@ export default {
       if (values) {
         return true;
       }
-      return 'Заполните поле';
+      return 'Название задачи обязательное поле';
     },
   }
 }
@@ -157,6 +190,37 @@ export default {
   &__add-btn {
     margin-bottom: 10px;
   }
+  &__modal:deep .base-modal__content {
+    width: 500px;
+    height: 450px;
+  }
+  &__item {
+    padding-left: 30px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .modal {
+    &__form {
+      position: relative;
+    }
+    &__input {
+      width: 100%;
+      padding: 10px 5px;
+      background: transparent;
+      border: 1px solid #27b5fe;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    &__textarea {
+      width: 100%;
+      padding: 10px 5px;
+      border: 1px solid #27b5fe;
+      border-radius: 8px;
+      min-height: 200px;
+    }
+  }
   &__empty{
     display: flex;
     flex-direction: column;
@@ -172,5 +236,12 @@ export default {
       font-size: 58px;
     }
   }
+}
+.error-message {
+  position: absolute;
+  bottom: -18px;
+  left: 0;
+  font-size: 12px;
+  color: red;
 }
 </style>

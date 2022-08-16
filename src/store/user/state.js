@@ -4,5 +4,4 @@ export default () => ({
     isAuth: false,
     isEditStatus: false,
   },
-  isClearLocalData: false
 });
