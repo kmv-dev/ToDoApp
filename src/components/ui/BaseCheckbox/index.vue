@@ -1,11 +1,11 @@
 <template>
   <label
       class="checkbox"
-      :class="{'checkbox_active': modelValue.includes(value)}"
+      :class="{'checkbox_active': checked}"
   >
     <transition name="bounce">
       <span
-          v-if="modelValue.includes(value)"
+          v-if="checked"
           class="checkbox__icon"
           :key="11"
       />
@@ -14,7 +14,7 @@
         class="checkbox__input"
         type="checkbox"
         :value="value"
-        :checked="modelValue.includes(value)"
+        :checked="checked"
         @change="evt => onChange(evt.target.value)"
     >
     <slot/>
@@ -27,6 +27,7 @@ export default {
   props: {
     value: { type: String, default: null, },
     modelValue: { type: Array, default: () => [], },
+    checked: { type: Boolean, default: false}
   },
   methods: {
     onChange(value) {
@@ -67,7 +68,7 @@ export default {
   }
   &__input {
     position: absolute;
-    z-index: 20;
+    z-index: -20;
     top: 5px;
     left: 2px;
   }

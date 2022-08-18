@@ -3,6 +3,6 @@ export default {
         state.projectData = data;
     },
     setTasks(state, data ) {
-        state.tasks = data;
+        state.tasks = data.reverse();
     },
 };

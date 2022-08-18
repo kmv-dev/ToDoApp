@@ -50,74 +50,41 @@
         Новая задача
       </BaseButton>
     </div>
-    <div class="tasks__current">
+    <div class="tasks__items">
       <TransitionGroup name="list">
         <div
-            v-if="notcompleted"
-            v-for="item in notcompleted"
-            :key="item.taskId"
-            class="tasks__item"
-        >
-          <BaseCheckbox
-              v-model="checked"
-              :value="item.taskId"
-              :id="item.taskId"
-              @change="changeTask(item, item.projectId)"
-          >
-          </BaseCheckbox>
-          <div class="item__inner">
-            <span>{{ item }}</span>
-          </div>
-        </div>
-        <div
-            v-else
+            v-if="getTasks"
             v-for="item in getTasks"
             :key="item.taskId"
-            class="tasks__item"
+            class="tasks__item item"
+            :class="{'tasks__item_active': item.done}"
         >
           <BaseCheckbox
               v-model="checked"
               :value="item.taskId"
               :id="item.taskId"
+              :checked="item.done"
               @change="changeTask(item, item.projectId)"
+              class="tasks__checkbox"
           >
           </BaseCheckbox>
-          <div class="item__inner">
+          <div class="item__body">
+            <div class="item__header">
+              <span class="item__title">{{ item.name }}</span>
+              <span class="">{{ item.createDate }}</span>
+            </div>
             <span>{{ item }}</span>
           </div>
         </div>
       </TransitionGroup>
+      <div
+          v-if="!getTasks?.[0]"
+          class="tasks__empty empty"
+      >
+        <span class="empty__text">В списке {{ getProjectData[0]?.name }} нет текущих задач</span>
+        <span class="empty__icon icon-orders"></span>
+      </div>
     </div>
-    <div class="tasks__completed">
-      completed
-      <TransitionGroup name="list">
-        <div
-            v-if="completed"
-            v-for="item in completed"
-            :key="item.taskId"
-            class="tasks__item"
-        >
-          <BaseCheckbox
-              v-model="checked"
-              :value="item.taskId"
-              :id="item.taskId"
-              @change="changeTask(item, item.projectId)"
-          >
-          </BaseCheckbox>
-          <div class="item__inner">
-            <span>{{ item }}</span>
-          </div>
-        </div>
-      </TransitionGroup>
-    </div>
-    <div
-        v-if="!getTasks?.[0]"
-        class="tasks__empty empty"
-    >
-      <span class="empty__text">В списке {{ getProjectData[0]?.name }} нет текущих задач</span>
-      <span class="empty__icon icon-orders"></span>
-    </div>
-    {{ checked }}
   </div>
 </template>
 
@@ -135,8 +102,6 @@ export default {
   data(){
     return {
       checked: [],
-      completed: [],
-      notcompleted: [],
       taskName: '',
       description: '',
       modalVisible: false,
@@ -146,7 +111,7 @@ export default {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
-          weekday: 'long',
+          weekday: 'short',
           timezone: 'UTC',
         },
         time: {
@@ -159,8 +124,7 @@ export default {
     }
   },
   mounted() {
-    this.updateTasks();
-    this.checked = JSON.parse(localStorage.getItem('completed')) || [];
+    this.getCurrentTasks();
   },
   computed: {
     ...mapGetters({
@@ -180,7 +144,7 @@ export default {
     }),
     async changeTask(item, projectId){
       await changeCompleteTask(item)
-      this.updateTasks(projectId)
+      this.getCurrentTasks(projectId)
     },
     addTask(id){
       function getRandomId(min, max) {
@@ -196,15 +160,13 @@ export default {
         taskId: getRandomId(0, 8987699988876).toString()
       }
       addDataToLocalStorage('tasks', payload)
-      this.updateTasks(id)
+      this.getCurrentTasks(id)
       this.modalVisible = false
     },
-    updateTasks(id){
+    getCurrentTasks(id){
       const data = getDataFromLocalStorage('tasks')
-      this.completed = getDataFromLocalStorage('completed')
-      this.notcompleted = getDataFromLocalStorage('tasksCheck')
-      this.tasks = data?.filter(obj => obj.projectId === id);
-      this.handleAddTasks(this.tasks)
+      const filteredTasks = data?.filter(obj => obj.projectId === id);
+      this.handleAddTasks(filteredTasks)
     },
     openModalAddTask(){
       this.modalVisible = true
@@ -227,9 +189,6 @@ export default {
   border-radius: 8px;
   background-color: #ffffff;
   box-shadow: 0 0 15px rgba(0,0,0,.07);
-  &__current {
-    height: 200px;
-  }
   &__header {
     margin-bottom: 10px;
     display: flex;
@@ -244,12 +203,37 @@ export default {
     width: 500px;
     height: 450px;
   }
-  &__item {
-    padding-left: 30px;
-    width: 100%;
+  &__items {
+    position: relative;
     display: flex;
+    flex-direction: column;
+  }
+  &__item {
+    position: relative;
+    padding: 5px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 99fr;
     align-items: center;
-    justify-content: flex-start;
+    margin: 5px 0;
+    border-bottom: 1px solid #FCFDFF;
+    &_active {
+      background: #D3F1D4;
+    }
+  }
+  .item {
+    &__title {
+      font-weight: bold;
+    }
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+  }
+  &__checkbox {
+    margin-right: 10px;
   }
   .modal {
     &__form {
@@ -290,21 +274,15 @@ export default {
 .list-move,
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.5s ease;
-  pointer-events: none;
+  transition: all 0.3s ease;
 }
-.list-enter-from {
-  opacity: 0;
-  transform: translateY(-20px);
-}
+.list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateX(30px);
 }
-
 .list-leave-active {
   position: absolute;
-  width: calc(100% - 30px);
 }
 .error-message {
   position: absolute;

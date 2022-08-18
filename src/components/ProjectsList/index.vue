@@ -127,6 +127,8 @@ export default {
     ...mapActions({
       addProjectDataToStore: 'addProjectData',
       addTaskDataToStore: 'addTask',
+      addTaskCheckDataToStore: 'addTaskCheck',
+      addTaskCompletedDataToStore: 'addTaskCompleted',
     }),
     updateProjectsList(){
       this.projects = getDataFromLocalStorage('projects')?.reverse()
