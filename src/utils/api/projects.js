@@ -54,6 +54,19 @@ export const changeCompleteTask = (item) => {
             obj.done = false;
         }
     });
-    console.log(todoArray)
+    const a = []
+    const b = []
+    todoArray.forEach(item =>{
+        if (item.done === true){
+            a.push(item)
+        } else {
+            b.push(item)
+        }
+    })
+    console.log('true', a)
+    console.log('false',b)
+
     localStorage.setItem('tasks', JSON.stringify(todoArray));
+    localStorage.setItem('tasksCheck', JSON.stringify(b));
+    localStorage.setItem('completed', JSON.stringify(a));
 }

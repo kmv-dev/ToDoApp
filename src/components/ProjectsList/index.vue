@@ -202,7 +202,7 @@ export default {
   border-radius: 8px;
   position: relative;
   height: 700px;
-  background-image: url("./public/123.svg");
+  background-image: url("./src/assets/img/bg.svg");
   background-size: 120%;
   background-repeat: no-repeat;
   background-position: bottom left;

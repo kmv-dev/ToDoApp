@@ -21,6 +21,7 @@ export default {
 <style lang="scss">
 .content {
   background: linear-gradient(115.67deg, #f2f2f2 7.14%, #d9dbde 170.42%);
+  overflow: hidden;
   &__inner {
     @include container;
     margin: 0 auto;

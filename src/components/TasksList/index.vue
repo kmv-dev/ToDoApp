@@ -50,30 +50,74 @@
         Новая задача
       </BaseButton>
     </div>
-    <div
-        v-if="getTasks"
-        v-for="item in getTasks"
-        :key="item.taskId"
-        class="tasks__item"
-    >
-      <BaseCheckbox
-          v-model="checked"
-          :value="item.taskId"
-          :id="item.taskId"
-          @change="completeTask(item, item.projectId)"
-      >
-      </BaseCheckbox>
-      <div class="item__inner">
-        <span>{{ item }}</span>
-      </div>
+    <div class="tasks__current">
+      <TransitionGroup name="list">
+        <div
+            v-if="notcompleted"
+            v-for="item in notcompleted"
+            :key="item.taskId"
+            class="tasks__item"
+        >
+          <BaseCheckbox
+              v-model="checked"
+              :value="item.taskId"
+              :id="item.taskId"
+              @change="changeTask(item, item.projectId)"
+          >
+          </BaseCheckbox>
+          <div class="item__inner">
+            <span>{{ item }}</span>
+          </div>
+        </div>
+        <div
+            v-else
+            v-for="item in getTasks"
+            :key="item.taskId"
+            class="tasks__item"
+        >
+          <BaseCheckbox
+              v-model="checked"
+              :value="item.taskId"
+              :id="item.taskId"
+              @change="changeTask(item, item.projectId)"
+          >
+          </BaseCheckbox>
+          <div class="item__inner">
+            <span>{{ item }}</span>
+          </div>
+        </div>
+      </TransitionGroup>
+    </div>
+    <div class="tasks__completed">
+      completed
+      <TransitionGroup name="list">
+        <div
+            v-if="completed"
+            v-for="item in completed"
+            :key="item.taskId"
+            class="tasks__item"
+        >
+          <BaseCheckbox
+              v-model="checked"
+              :value="item.taskId"
+              :id="item.taskId"
+              @change="changeTask(item, item.projectId)"
+          >
+          </BaseCheckbox>
+          <div class="item__inner">
+            <span>{{ item }}</span>
+          </div>
+        </div>
+      </TransitionGroup>
     </div>
     <div
         v-if="!getTasks?.[0]"
         class="tasks__empty empty"
     >
-      <span class="empty__text">Тут пока ничего нет, создайте задачу</span>
+      <span class="empty__text">В списке {{ getProjectData[0]?.name }} нет текущих задач</span>
       <span class="empty__icon icon-orders"></span>
     </div>
+    {{ checked }}
   </div>
 </template>
 
@@ -91,6 +135,8 @@ export default {
   data(){
     return {
       checked: [],
+      completed: [],
+      notcompleted: [],
       taskName: '',
       description: '',
       modalVisible: false,
@@ -114,7 +160,7 @@ export default {
   },
   mounted() {
     this.updateTasks();
-    this.checked = JSON.parse(localStorage.getItem('check')) || [];
+    this.checked = JSON.parse(localStorage.getItem('completed')) || [];
   },
   computed: {
     ...mapGetters({
@@ -132,9 +178,8 @@ export default {
     ...mapActions({
       handleAddTasks: 'addTask'
     }),
-    async completeTask(item, projectId){
+    async changeTask(item, projectId){
       await changeCompleteTask(item)
-      localStorage.setItem('check', JSON.stringify(this.checked))
       this.updateTasks(projectId)
     },
     addTask(id){
@@ -156,6 +201,8 @@ export default {
     },
     updateTasks(id){
       const data = getDataFromLocalStorage('tasks')
+      this.completed = getDataFromLocalStorage('completed')
+      this.notcompleted = getDataFromLocalStorage('tasksCheck')
       this.tasks = data?.filter(obj => obj.projectId === id);
       this.handleAddTasks(this.tasks)
     },
@@ -180,6 +227,9 @@ export default {
   border-radius: 8px;
   background-color: #ffffff;
   box-shadow: 0 0 15px rgba(0,0,0,.07);
+  &__current {
+    height: 200px;
+  }
   &__header {
     margin-bottom: 10px;
     display: flex;
@@ -236,6 +286,25 @@ export default {
       font-size: 58px;
     }
   }
+}
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.list-leave-active {
+  position: absolute;
+  width: calc(100% - 30px);
 }
 .error-message {
   position: absolute;
