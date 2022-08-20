@@ -54,7 +54,7 @@
       <TransitionGroup name="list">
         <div
             v-if="getTasks"
-            v-for="item in getTasks"
+            v-for="(item, index) in getTasks"
             :key="item.taskId"
             class="tasks__item item"
             :class="{'tasks__item_active': item.done}"
@@ -68,12 +68,16 @@
               class="tasks__checkbox"
           >
           </BaseCheckbox>
-          <div class="item__body">
-            <div class="item__header">
-              <span class="item__title">{{ item.name }}</span>
-              <span class="">{{ item.createDate }}</span>
+          <div class="item__header">
+            <span class="item__title">{{ item.name }}</span>
+            <div class="item__action">
+              <span class="icon-trash_full"></span>
+              <span class="icon-trash_full"></span>
             </div>
-            <span>{{ item }}</span>
+          </div>
+          <div class="item__body">
+            <span class="item__description">{{ item.description }}</span>
+            <span class="item__date">{{ item.createDate }}</span>
           </div>
         </div>
       </TransitionGroup>
@@ -101,6 +105,7 @@ export default {
   },
   data(){
     return {
+      isActive: null,
       checked: [],
       taskName: '',
       description: '',
@@ -206,34 +211,61 @@ export default {
   &__items {
     position: relative;
     display: flex;
+    padding-right: 25px;
     flex-direction: column;
+    max-height: 615px;
+    overflow-y: auto;
   }
   &__item {
     position: relative;
-    padding: 5px;
+    padding: 5px 5px 5px 30px;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 99fr;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
     margin: 5px 0;
-    border-bottom: 1px solid #FCFDFF;
+    background: linear-gradient(90deg, #FFEDE6 0.01%, rgba(255, 241, 236, 0.49) 0.02%, #F2F0F2 100%);
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    border: 1px solid transparent;
     &_active {
-      background: #D3F1D4;
+      background: linear-gradient(90deg, #E1FFD3 0%, #DCEEFF 100%);
+    }
+    &:hover {
+      border: 1px solid #5787A4;
     }
   }
   .item {
     &__title {
+      color: #5787A4;
       font-weight: bold;
+    }
+    &__date {
+      position: absolute;
+      right: 10px;
+      bottom: 0;
+      font-size: 12px;
+      color: #7D859A;
+      opacity: 0.6;
+    }
+    &__description {
+      color:  #555555;
+      font-size: 12px;
     }
     &__header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      padding-right: 5px;
+    }
+    &__body {
+      display: flex;
     }
   }
   &__checkbox {
-    margin-right: 10px;
+    position: absolute;
+    left: 5px;
+    top: 8px;
   }
   .modal {
     &__form {

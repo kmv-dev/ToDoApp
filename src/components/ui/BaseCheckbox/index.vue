@@ -1,13 +1,12 @@
 <template>
   <label
       class="checkbox"
-      :class="{'checkbox_active': checked}"
+      :class="{'checkbox_checked': checked}"
   >
     <transition name="bounce">
       <span
           v-if="checked"
-          class="checkbox__icon"
-          :key="11"
+          class="checkbox__icon icon-check"
       />
     </transition>
     <input
@@ -53,8 +52,8 @@ export default {
     background-color: #FFFFFF;
     border: 1px solid #d9dbde;
     display: inline-block;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
     flex-grow: 0;
     border-radius: 100%;
@@ -63,7 +62,7 @@ export default {
     background-size: 50% 50%;
     transition: 0.1s ease-in-out;
   }
-  &_active::before {
+  &_checked::before {
     border: 2px solid #339966;
   }
   &__input {
@@ -74,15 +73,9 @@ export default {
   }
   &__icon {
     position: absolute;
-    background-image: url("./src/assets/img/icon-check.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100%;
-    width: 20px;
-    height: 20px;
-    top: -2px;
-    left: 4px;
-    font-size: 30px;
+    top: -5px;
+    left: -1px;
+    font-size: 26px;
   }
 }
 .bounce-enter-active {
