@@ -1,4 +1,4 @@
 export default () => ({
   projectData: [],
-  tasks: []
+  tasks: [],
 });

@@ -50,29 +50,44 @@
         Новая задача
       </BaseButton>
     </div>
-    <div
-        v-if="getTasks"
-        v-for="item in getTasks"
-        :key="item.taskId"
-        class="tasks__item"
-    >
-      <BaseCheckbox
-          v-model="checked"
-          :value="item.taskId"
-          :id="item.taskId"
-          @change="completeTask(item, item.projectId)"
+    <div class="tasks__items">
+      <TransitionGroup name="list">
+        <div
+            v-if="getTasks"
+            v-for="(item, index) in getTasks"
+            :key="item.taskId"
+            class="tasks__item item"
+            :class="{'tasks__item_active': item.done}"
+        >
+          <BaseCheckbox
+              v-model="checked"
+              :value="item.taskId"
+              :id="item.taskId"
+              :checked="item.done"
+              @change="changeTask(item, item.projectId)"
+              class="tasks__checkbox"
+          >
+          </BaseCheckbox>
+          <div class="item__header">
+            <span class="item__title">{{ item.name }}</span>
+            <div class="item__action">
+              <span class="icon-trash_full"></span>
+              <span class="icon-trash_full"></span>
+            </div>
+          </div>
+          <div class="item__body">
+            <span class="item__description">{{ item.description }}</span>
+            <span class="item__date">{{ item.createDate }}</span>
+          </div>
+        </div>
+      </TransitionGroup>
+      <div
+          v-if="!getTasks?.[0]"
+          class="tasks__empty empty"
       >
-      </BaseCheckbox>
-      <div class="item__inner">
-        <span>{{ item }}</span>
+        <span class="empty__text">В списке {{ getProjectData[0]?.name }} нет текущих задач</span>
+        <span class="empty__icon icon-orders"></span>
       </div>
-    </div>
-    <div
-        v-if="!getTasks?.[0]"
-        class="tasks__empty empty"
-    >
-      <span class="empty__text">Тут пока ничего нет, создайте задачу</span>
-      <span class="empty__icon icon-orders"></span>
     </div>
   </div>
 </template>
@@ -90,6 +105,7 @@ export default {
   },
   data(){
     return {
+      isActive: null,
       checked: [],
       taskName: '',
       description: '',
@@ -100,7 +116,7 @@ export default {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
-          weekday: 'long',
+          weekday: 'short',
           timezone: 'UTC',
         },
         time: {
@@ -113,8 +129,7 @@ export default {
     }
   },
   mounted() {
-    this.updateTasks();
-    this.checked = JSON.parse(localStorage.getItem('check')) || [];
+    this.getCurrentTasks();
   },
   computed: {
     ...mapGetters({
@@ -132,10 +147,9 @@ export default {
     ...mapActions({
       handleAddTasks: 'addTask'
     }),
-    async completeTask(item, projectId){
+    async changeTask(item, projectId){
       await changeCompleteTask(item)
-      localStorage.setItem('check', JSON.stringify(this.checked))
-      this.updateTasks(projectId)
+      this.getCurrentTasks(projectId)
     },
     addTask(id){
       function getRandomId(min, max) {
@@ -151,13 +165,13 @@ export default {
         taskId: getRandomId(0, 8987699988876).toString()
       }
       addDataToLocalStorage('tasks', payload)
-      this.updateTasks(id)
+      this.getCurrentTasks(id)
       this.modalVisible = false
     },
-    updateTasks(id){
+    getCurrentTasks(id){
       const data = getDataFromLocalStorage('tasks')
-      this.tasks = data?.filter(obj => obj.projectId === id);
-      this.handleAddTasks(this.tasks)
+      const filteredTasks = data?.filter(obj => obj.projectId === id);
+      this.handleAddTasks(filteredTasks)
     },
     openModalAddTask(){
       this.modalVisible = true
@@ -194,12 +208,64 @@ export default {
     width: 500px;
     height: 450px;
   }
+  &__items {
+    position: relative;
+    display: flex;
+    padding-right: 25px;
+    flex-direction: column;
+    max-height: 615px;
+    overflow-y: auto;
+  }
   &__item {
-    padding-left: 30px;
+    position: relative;
+    padding: 5px 5px 5px 30px;
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    flex-direction: column;
+    margin: 5px 0;
+    background: linear-gradient(90deg, #FFEDE6 0.01%, rgba(255, 241, 236, 0.49) 0.02%, #F2F0F2 100%);
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    border: 1px solid transparent;
+    &_active {
+      background: linear-gradient(90deg, #E1FFD3 0%, #DCEEFF 100%);
+    }
+    &:hover {
+      border: 1px solid #5787A4;
+    }
+  }
+  .item {
+    &__title {
+      color: #5787A4;
+      font-weight: bold;
+    }
+    &__date {
+      position: absolute;
+      right: 10px;
+      bottom: 0;
+      font-size: 12px;
+      color: #7D859A;
+      opacity: 0.6;
+    }
+    &__description {
+      color:  #555555;
+      font-size: 12px;
+    }
+    &__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-right: 5px;
+    }
+    &__body {
+      display: flex;
+    }
+  }
+  &__checkbox {
+    position: absolute;
+    left: 5px;
+    top: 8px;
   }
   .modal {
     &__form {
@@ -236,6 +302,19 @@ export default {
       font-size: 58px;
     }
   }
+}
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-leave-active {
+  position: absolute;
 }
 .error-message {
   position: absolute;

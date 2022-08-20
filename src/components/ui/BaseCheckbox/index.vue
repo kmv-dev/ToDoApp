@@ -1,13 +1,21 @@
 <template>
-  <label>
-
+  <label
+      class="checkbox"
+      :class="{'checkbox_checked': checked}"
+  >
+    <transition name="bounce">
+      <span
+          v-if="checked"
+          class="checkbox__icon icon-check"
+      />
+    </transition>
     <input
+        class="checkbox__input"
         type="checkbox"
         :value="value"
-        :checked="modelValue.includes(value)"
+        :checked="checked"
         @change="evt => onChange(evt.target.value)"
     >
-
     <slot/>
   </label>
 </template>
@@ -18,6 +26,7 @@ export default {
   props: {
     value: { type: String, default: null, },
     modelValue: { type: Array, default: () => [], },
+    checked: { type: Boolean, default: false}
   },
   methods: {
     onChange(value) {
@@ -33,8 +42,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-label {
+.checkbox {
+  position: relative;
   display: block;
   text-align: left;
+  cursor: pointer;
+  &::before {
+    content: '';
+    background-color: #FFFFFF;
+    border: 1px solid #d9dbde;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border-radius: 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+    transition: 0.1s ease-in-out;
+  }
+  &_checked::before {
+    border: 2px solid #339966;
+  }
+  &__input {
+    position: absolute;
+    z-index: -20;
+    top: 5px;
+    left: 2px;
+  }
+  &__icon {
+    position: absolute;
+    top: -5px;
+    left: -1px;
+    font-size: 26px;
+  }
+}
+.bounce-enter-active {
+  animation: bounce-in 0.2s;
+}
+.bounce-leave-active {
+
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
