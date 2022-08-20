@@ -127,6 +127,8 @@ export default {
     ...mapActions({
       addProjectDataToStore: 'addProjectData',
       addTaskDataToStore: 'addTask',
+      addTaskCheckDataToStore: 'addTaskCheck',
+      addTaskCompletedDataToStore: 'addTaskCompleted',
     }),
     updateProjectsList(){
       this.projects = getDataFromLocalStorage('projects')?.reverse()
@@ -202,7 +204,7 @@ export default {
   border-radius: 8px;
   position: relative;
   height: 700px;
-  background-image: url("./public/123.svg");
+  background-image: url("./src/assets/img/bg.svg");
   background-size: 120%;
   background-repeat: no-repeat;
   background-position: bottom left;

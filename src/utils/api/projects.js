@@ -54,6 +54,5 @@ export const changeCompleteTask = (item) => {
             obj.done = false;
         }
     });
-    console.log(todoArray)
     localStorage.setItem('tasks', JSON.stringify(todoArray));
 }
