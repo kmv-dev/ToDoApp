@@ -86,7 +86,7 @@ import {
   addDataToLocalStorage,
   getDataFromLocalStorage,
   removeProjectToLocalStorage,
-  removeTasksToLocalStorage
+  removeProjectTasks
 } from "../../utils/api/projects";
 import {mapActions, mapGetters} from "vuex";
 export default {
@@ -154,7 +154,7 @@ export default {
     async deleteProject(id){
       if(confirm('Уверен?')){
         await removeProjectToLocalStorage('projects', id)
-        await removeTasksToLocalStorage('tasks', id)
+        await removeProjectTasks('tasks', id)
         const data = await getDataFromLocalStorage('projects')
         const tasks = await getDataFromLocalStorage('tasks')
         const newArr = data.filter(obj => obj.id === id);

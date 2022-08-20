@@ -83,7 +83,7 @@ export default {
         removeDataToLocalStorage('userData')
         removeDataToLocalStorage('projects')
         removeDataToLocalStorage('tasks')
-        removeDataToLocalStorage('completed')
+        removeDataToLocalStorage('tasksCheck')
         const payload = {
           name: '',
           isAuth: false

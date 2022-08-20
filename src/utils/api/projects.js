@@ -33,15 +33,23 @@ export const getDataFromLocalStorage = (localStorageKey) => {
 
 export const removeProjectToLocalStorage = (localStorageKey, id) => {
     const todoArray = JSON.parse(localStorage.getItem(localStorageKey));
-    const neaList = todoArray.filter(obj => obj.id !== id);
-    localStorage.setItem(localStorageKey, JSON.stringify(neaList));
+    const newList = todoArray.filter(obj => obj.id !== id);
+    localStorage.setItem(localStorageKey, JSON.stringify(newList));
 }
 
-export const removeTasksToLocalStorage = (localStorageKey, id) => {
+export const removeProjectTasks = (localStorageKey, id) => {
     const tasksArray = JSON.parse(localStorage.getItem(localStorageKey));
     if (tasksArray !== null) {
-        const neaList = tasksArray.filter(obj => obj.projectId !== id);
-        localStorage.setItem(localStorageKey, JSON.stringify(neaList));
+        const newList = tasksArray.filter(obj => obj.projectId !== id);
+        localStorage.setItem(localStorageKey, JSON.stringify(newList));
+    }
+}
+
+export const removeTask = (localStorageKey, id) => {
+    const tasksArray = JSON.parse(localStorage.getItem(localStorageKey));
+    if (tasksArray !== null) {
+        const newList = tasksArray.filter(obj => obj.taskId !== id);
+        localStorage.setItem(localStorageKey, JSON.stringify(newList));
     }
 }
 

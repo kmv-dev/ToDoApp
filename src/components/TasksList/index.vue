@@ -71,8 +71,10 @@
           <div class="item__header">
             <span class="item__title">{{ item.name }}</span>
             <div class="item__action">
-              <span class="icon-trash_full"></span>
-              <span class="icon-trash_full"></span>
+              <span
+                  class="item__icon icon-trash_full"
+                  @click="deleteTask(item.taskId, item.projectId)"
+              />
             </div>
           </div>
           <div class="item__body">
@@ -93,7 +95,12 @@
 </template>
 
 <script>
-import { addDataToLocalStorage, getDataFromLocalStorage, changeCompleteTask } from "../../utils/api/projects";
+import {
+  addDataToLocalStorage,
+  getDataFromLocalStorage,
+  changeCompleteTask,
+  removeTask
+} from "../../utils/api/projects";
 import { mapActions, mapGetters } from "vuex";
 import { ErrorMessage, Field, Form } from "vee-validate";
 
@@ -111,6 +118,7 @@ export default {
       description: '',
       modalVisible: false,
       clear: false,
+      taskId: null,
       dateOptions: {
         date: {
           year: 'numeric',
@@ -137,11 +145,6 @@ export default {
       getTasks: 'getTasks',
       isAuth: 'getAuthStatus'
     }),
-    createDate(){
-      const date = new Date().toLocaleDateString('ru-Ru', this.dateOptions.date);
-      const time = new Date().toLocaleTimeString('ru-Ru', this.dateOptions.time);
-      return date + ' ' + time
-    }
   },
   methods: {
     ...mapActions({
@@ -152,6 +155,8 @@ export default {
       this.getCurrentTasks(projectId)
     },
     addTask(id){
+      const date = new Date().toLocaleDateString('ru-Ru', this.dateOptions.date);
+      const time = new Date().toLocaleTimeString('ru-Ru', this.dateOptions.time);
       function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -160,9 +165,16 @@ export default {
       const payload = {
         name: this.taskName,
         description: this.description,
-        createDate: this.createDate,
+        createDate: date + ' ' + time,
         projectId: id,
         taskId: getRandomId(0, 8987699988876).toString()
+      }
+      if(this.taskId !== null){
+        removeTask('tasks', this.taskId)
+        addDataToLocalStorage('tasks', payload)
+        this.getCurrentTasks(id)
+        this.modalVisible = false
+        return
       }
       addDataToLocalStorage('tasks', payload)
       this.getCurrentTasks(id)
@@ -172,6 +184,11 @@ export default {
       const data = getDataFromLocalStorage('tasks')
       const filteredTasks = data?.filter(obj => obj.projectId === id);
       this.handleAddTasks(filteredTasks)
+    },
+    deleteTask(taskId, projectId){
+      removeTask('tasks', taskId)
+      removeTask('tasksCheck', taskId)
+      this.getCurrentTasks(projectId);
     },
     openModalAddTask(){
       this.modalVisible = true
@@ -214,6 +231,7 @@ export default {
     padding-right: 25px;
     flex-direction: column;
     max-height: 615px;
+    min-height: 615px;
     overflow-y: auto;
   }
   &__item {
@@ -235,6 +253,14 @@ export default {
     }
   }
   .item {
+    &__icon {
+      cursor: pointer;
+      color: #7D859A;
+      transition: 0.2s ease-in-out;
+      &:hover {
+        color: #1a1a1a;
+      }
+    }
     &__title {
       color: #5787A4;
       font-weight: bold;
@@ -306,15 +332,20 @@ export default {
 .list-move,
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
 }
-.list-enter-from,
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateY(20px);
 }
+
 .list-leave-active {
   position: absolute;
+  width: calc(100% - 30px);
 }
 .error-message {
   position: absolute;
