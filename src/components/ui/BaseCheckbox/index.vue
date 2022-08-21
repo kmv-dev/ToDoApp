@@ -18,9 +18,18 @@
 export default {
   name: "BaseCheckbox",
   props: {
-    value: { type: String, default: null },
-    modelValue: { type: Array, default: () => [] },
-    checked: { type: Boolean, default: false },
+    value: {
+      type: String,
+      default: null,
+    },
+    modelValue: {
+      type: Array,
+      default: () => [],
+    },
+    checked: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     onChange(value) {
