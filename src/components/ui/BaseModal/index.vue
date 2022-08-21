@@ -48,7 +48,7 @@ export default {
   methods: {
     modalHide(){
       this.$emit('update:isShow', false)
-      document.body.style.overflow = 'scroll';
+      document.body.style.overflow = 'auto';
     },
   }
 }
@@ -71,7 +71,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     padding: 15px;
-    margin: 0 auto;
+    margin: 0 15px;
     background: white;
     width: 400px;
     height: 300px;

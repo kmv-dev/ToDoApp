@@ -86,7 +86,7 @@ import {
   addDataToLocalStorage,
   getDataFromLocalStorage,
   removeProjectToLocalStorage,
-  removeTasksToLocalStorage
+  removeProjectTasks
 } from "../../utils/api/projects";
 import {mapActions, mapGetters} from "vuex";
 export default {
@@ -126,9 +126,7 @@ export default {
   methods: {
     ...mapActions({
       addProjectDataToStore: 'addProjectData',
-      addTaskDataToStore: 'addTask',
-      addTaskCheckDataToStore: 'addTaskCheck',
-      addTaskCompletedDataToStore: 'addTaskCompleted',
+      addTaskDataToStore: 'addTask'
     }),
     updateProjectsList(){
       this.projects = getDataFromLocalStorage('projects')?.reverse()
@@ -149,21 +147,22 @@ export default {
         this.getProjectData(this.projects[0]?.id)
         this.projectName = ''
         this.modalVisible = false
+        document.body.style.overflow = 'auto';
       }
     },
     async deleteProject(id){
       if(confirm('Уверен?')){
         await removeProjectToLocalStorage('projects', id)
-        await removeTasksToLocalStorage('tasks', id)
+        await removeProjectTasks('tasks', id)
         const data = await getDataFromLocalStorage('projects')
         const tasks = await getDataFromLocalStorage('tasks')
         const newArr = data.filter(obj => obj.id === id);
         await this.addProjectDataToStore(newArr)
         if(tasks !== null) {
           const filterTasks = tasks.filter(obj => obj.projectId === id);
-          await this.addTaskDataToStore(filterTasks)
+          this.addTaskDataToStore(filterTasks)
         }
-        this.updateProjectsList();
+        await this.updateProjectsList();
         this.getProjectData(this.projects[0]?.id)
       }
     },
@@ -288,6 +287,9 @@ export default {
       background-color: #E0E0E0;
       transition: 0.1s ease-in-out;
     }
+    &:hover .item__icon {
+      visibility: visible;
+    }
     &:hover:before{
       transform: translateX(5px);
       background-color: #7D859A;
@@ -302,6 +304,7 @@ export default {
       flex-grow: 0;
       color: #7D859A;
       cursor: pointer;
+      visibility: hidden;
     }
     &__arrow {
       position: absolute;
@@ -313,6 +316,7 @@ export default {
       transition: 0.2s ease-in-out;
     }
     &__name {
+      display: inline-block;
       color: rgba(125, 133, 154, 0.8);
       font-size: 14px;
       transition: 0.2s ease-in-out;
@@ -342,6 +346,20 @@ export default {
       border-radius: 8px;
     }
   }
+  @include _1024 {
+    max-height: 220px;
+    background-image: none;
+    &__items {
+      max-height: 150px;
+      min-height: 150px;
+      overflow-y: auto;
+    }
+  }
+  @include _767 {
+    .item__name {
+      max-width: 180px;
+    }
+  }
 }
 .list-move,
 .list-enter-active,
@@ -360,12 +378,5 @@ export default {
 .list-leave-active {
   position: absolute;
   width: calc(100% - 30px);
-}
-.error-message {
-  position: absolute;
-  bottom: -18px;
-  left: 0;
-  font-size: 12px;
-  color: red;
 }
 </style>

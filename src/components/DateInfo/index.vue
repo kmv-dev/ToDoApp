@@ -56,5 +56,13 @@ export default {
     color: #1a1a1a;
     letter-spacing: 1px;
   }
+  @include _1024 {
+    &__date {
+      font-size: 12px;
+    }
+    &__time {
+      font-size: 12px;
+    }
+  }
 }
 </style>

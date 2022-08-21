@@ -76,6 +76,7 @@ export default {
     top: -5px;
     left: -1px;
     font-size: 26px;
+    color: #373435;
   }
 }
 .bounce-enter-active {

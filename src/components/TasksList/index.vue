@@ -39,7 +39,7 @@
       </template>
     </BaseModal>
     <div class="tasks__header">
-      <h4>#{{ getProjectData[0]?.name }}</h4>
+      <h4 class="tasks__name">#{{ getProjectData[0]?.name }}</h4>
       <BaseButton
           :isIcon="true"
           :iconClass="'icon-plus_square'"
@@ -71,8 +71,10 @@
           <div class="item__header">
             <span class="item__title">{{ item.name }}</span>
             <div class="item__action">
-              <span class="icon-trash_full"></span>
-              <span class="icon-trash_full"></span>
+              <span
+                  class="item__icon icon-trash_full"
+                  @click="deleteTask(item.taskId, item.projectId)"
+              />
             </div>
           </div>
           <div class="item__body">
@@ -85,7 +87,18 @@
           v-if="!getTasks?.[0]"
           class="tasks__empty empty"
       >
-        <span class="empty__text">В списке {{ getProjectData[0]?.name }} нет текущих задач</span>
+        <span
+            v-if="!getProjectData[0]?.name"
+            class="empty__text"
+        >
+          Создайте список задач
+        </span>
+        <span
+            v-else
+            class="empty__text"
+        >
+          В списке {{ getProjectData[0]?.name }} нет текущих задач
+        </span>
         <span class="empty__icon icon-orders"></span>
       </div>
     </div>
@@ -93,7 +106,13 @@
 </template>
 
 <script>
-import { addDataToLocalStorage, getDataFromLocalStorage, changeCompleteTask } from "../../utils/api/projects";
+import {
+  addDataToLocalStorage,
+  getDataFromLocalStorage,
+  changeCompleteTask,
+  removeTask
+} from "../../utils/api/projects";
+import { OPTIONS } from '@/utils/constants/dateOptions.js'
 import { mapActions, mapGetters } from "vuex";
 import { ErrorMessage, Field, Form } from "vee-validate";
 
@@ -111,21 +130,7 @@ export default {
       description: '',
       modalVisible: false,
       clear: false,
-      dateOptions: {
-        date: {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          weekday: 'short',
-          timezone: 'UTC',
-        },
-        time: {
-          timezone: 'UTC',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric'
-        }
-      }
+      taskId: null
     }
   },
   mounted() {
@@ -137,11 +142,6 @@ export default {
       getTasks: 'getTasks',
       isAuth: 'getAuthStatus'
     }),
-    createDate(){
-      const date = new Date().toLocaleDateString('ru-Ru', this.dateOptions.date);
-      const time = new Date().toLocaleTimeString('ru-Ru', this.dateOptions.time);
-      return date + ' ' + time
-    }
   },
   methods: {
     ...mapActions({
@@ -152,6 +152,9 @@ export default {
       this.getCurrentTasks(projectId)
     },
     addTask(id){
+      OPTIONS.date.weekday = 'short'
+      const date = new Date().toLocaleDateString('ru-Ru', OPTIONS.date);
+      const time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time);
       function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -160,18 +163,25 @@ export default {
       const payload = {
         name: this.taskName,
         description: this.description,
-        createDate: this.createDate,
+        createDate: date + ' ' + time,
         projectId: id,
         taskId: getRandomId(0, 8987699988876).toString()
       }
       addDataToLocalStorage('tasks', payload)
       this.getCurrentTasks(id)
       this.modalVisible = false
+      this.taskName = ''
+      this.description = ''
+      document.body.style.overflow = 'auto';
     },
     getCurrentTasks(id){
       const data = getDataFromLocalStorage('tasks')
       const filteredTasks = data?.filter(obj => obj.projectId === id);
       this.handleAddTasks(filteredTasks)
+    },
+    deleteTask(taskId, projectId){
+      removeTask('tasks', taskId)
+      this.getCurrentTasks(projectId);
     },
     openModalAddTask(){
       this.modalVisible = true
@@ -189,17 +199,20 @@ export default {
 
 <style lang="scss" scoped>
 .tasks {
-  padding: 15px;
   width: 100%;
+  padding: 15px;
   border-radius: 8px;
   background-color: #ffffff;
   box-shadow: 0 0 15px rgba(0,0,0,.07);
   &__header {
-    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: end;
     border-bottom: 1px solid #d9dbe9;
+    margin-bottom: 10px;
+  }
+  &__name {
+    max-width: 400px;
   }
   &__add-btn {
     margin-bottom: 10px;
@@ -211,10 +224,21 @@ export default {
   &__items {
     position: relative;
     display: flex;
-    padding-right: 25px;
+    padding-right: 12px;
     flex-direction: column;
     max-height: 615px;
+    min-height: 615px;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      height: 3px;
+      width: 4px;
+      border-radius: 100px;
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(125, 133, 154, 0.3);
+      border-radius: 100px;
+    }
   }
   &__item {
     position: relative;
@@ -235,6 +259,14 @@ export default {
     }
   }
   .item {
+    &__icon {
+      cursor: pointer;
+      color: #7D859A;
+      transition: 0.2s ease-in-out;
+      &:hover {
+        color: #1a1a1a;
+      }
+    }
     &__title {
       color: #5787A4;
       font-weight: bold;
@@ -255,11 +287,13 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 5px;
       padding-right: 5px;
     }
     &__body {
       display: flex;
+      margin-left: -22px;
+      padding-bottom: 12px;
     }
   }
   &__checkbox {
@@ -301,26 +335,38 @@ export default {
     &__icon {
       font-size: 58px;
     }
+    &__text {
+      text-align: center;
+    }
+  }
+  @include _767 {
+    &__header {
+      flex-direction: column;
+      align-items: center;
+    }
+    &__name {
+      text-align: center;
+      max-width: none;
+      margin-bottom: 5px;
+    }
   }
 }
 .list-move,
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
 }
-.list-enter-from,
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
 .list-leave-to {
   opacity: 0;
-  transform: translateX(30px);
+  transform: translateY(20px);
 }
+
 .list-leave-active {
   position: absolute;
-}
-.error-message {
-  position: absolute;
-  bottom: -18px;
-  left: 0;
-  font-size: 12px;
-  color: red;
+  width: calc(100% - 30px);
 }
 </style>

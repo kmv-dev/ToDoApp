@@ -24,15 +24,25 @@ export default {
   &__inner {
     @include container;
     margin: 0 auto;
-    padding-top: 30px;
+    padding: 30px;
     display: grid;
-    grid-template-columns: 1fr 4fr;
+    grid-template-columns: 1fr 3fr;
     grid-gap: 20px;
   }
   &__projects {
     padding-top: 30px;
     border-right: 1px solid white;
     height: 100vh;
+  }
+  @include _1300 {
+    &__inner {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+  @include _1024 {
+    &__inner {
+      grid-template-columns: 1fr;
+    }
   }
 }
 </style>

@@ -26,13 +26,14 @@
           </BaseButton>
         </Form>
         <HelloUser/>
-        <button
+        <BaseButton
             v-if="isAuth"
             class="header__button header__button_logout"
+            :mode="'logout'"
             @click="removeData"
         >
           Log out
-        </button>
+        </BaseButton>
       </div>
     </div>
   </header>
@@ -83,7 +84,6 @@ export default {
         removeDataToLocalStorage('userData')
         removeDataToLocalStorage('projects')
         removeDataToLocalStorage('tasks')
-        removeDataToLocalStorage('completed')
         const payload = {
           name: '',
           isAuth: false
@@ -108,6 +108,7 @@ export default {
 
 <style lang="scss" scoped>
 .header {
+  position: relative;
   display: flex;
   justify-content: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
@@ -153,13 +154,32 @@ export default {
       box-shadow: none;
     }
     &_logout {
-      background-color: #F3F3F3;
-      color: #5787A4;
       margin-left: 20px;
-      &:hover {
-        background: #7D859A;
-        color: white;
+    }
+  }
+  @include _1024 {
+    padding: 5px 0 14px;
+    &__form {
+      width: 100%;
+      justify-content: space-between;
+    }
+    &__inner {
+      display: flex;
+      flex-direction: column;
+    }
+    &__info {
+      position: absolute;
+      bottom: -50px;
+    }
+    &__button {
+      &_logout {
+        margin-left: 20px;
+        font-size: 12px !important;
       }
+    }
+    &__action {
+      width: 100%;
+      justify-content: space-between;
     }
   }
 }

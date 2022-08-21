@@ -165,6 +165,11 @@ export default {
       font-size: 20px;
     }
   }
+  @include _1024 {
+    &__hello-text {
+      font-size: 14px;
+    }
+  }
 }
 .error-message {
   position: absolute;
