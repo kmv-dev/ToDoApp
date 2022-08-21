@@ -355,6 +355,7 @@ export default {
 
 .list-leave-active {
   position: absolute;
+  z-index: 10;
   width: calc(100% - 30px);
 }
 </style>
