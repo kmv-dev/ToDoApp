@@ -39,7 +39,7 @@
       </template>
     </BaseModal>
     <div class="tasks__header">
-      <h4>#{{ getProjectData[0]?.name }}</h4>
+      <h4 class="tasks__name">#{{ getProjectData[0]?.name }}</h4>
       <BaseButton
           :isIcon="true"
           :iconClass="'icon-plus_square'"
@@ -87,7 +87,18 @@
           v-if="!getTasks?.[0]"
           class="tasks__empty empty"
       >
-        <span class="empty__text">В списке {{ getProjectData[0]?.name }} нет текущих задач</span>
+        <span
+            v-if="!getProjectData[0]?.name"
+            class="empty__text"
+        >
+          Создайте список задач
+        </span>
+        <span
+            v-else
+            class="empty__text"
+        >
+          В списке {{ getProjectData[0]?.name }} нет текущих задач
+        </span>
         <span class="empty__icon icon-orders"></span>
       </div>
     </div>
@@ -101,6 +112,7 @@ import {
   changeCompleteTask,
   removeTask
 } from "../../utils/api/projects";
+import { OPTIONS } from '@/utils/constants/dateOptions.js'
 import { mapActions, mapGetters } from "vuex";
 import { ErrorMessage, Field, Form } from "vee-validate";
 
@@ -118,22 +130,7 @@ export default {
       description: '',
       modalVisible: false,
       clear: false,
-      taskId: null,
-      dateOptions: {
-        date: {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          weekday: 'short',
-          timezone: 'UTC',
-        },
-        time: {
-          timezone: 'UTC',
-          hour: 'numeric',
-          minute: 'numeric',
-          second: 'numeric'
-        }
-      }
+      taskId: null
     }
   },
   mounted() {
@@ -155,8 +152,9 @@ export default {
       this.getCurrentTasks(projectId)
     },
     addTask(id){
-      const date = new Date().toLocaleDateString('ru-Ru', this.dateOptions.date);
-      const time = new Date().toLocaleTimeString('ru-Ru', this.dateOptions.time);
+      OPTIONS.date.weekday = 'short'
+      const date = new Date().toLocaleDateString('ru-Ru', OPTIONS.date);
+      const time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time);
       function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -169,16 +167,12 @@ export default {
         projectId: id,
         taskId: getRandomId(0, 8987699988876).toString()
       }
-      if(this.taskId !== null){
-        removeTask('tasks', this.taskId)
-        addDataToLocalStorage('tasks', payload)
-        this.getCurrentTasks(id)
-        this.modalVisible = false
-        return
-      }
       addDataToLocalStorage('tasks', payload)
       this.getCurrentTasks(id)
       this.modalVisible = false
+      this.taskName = ''
+      this.description = ''
+      document.body.style.overflow = 'auto';
     },
     getCurrentTasks(id){
       const data = getDataFromLocalStorage('tasks')
@@ -187,7 +181,6 @@ export default {
     },
     deleteTask(taskId, projectId){
       removeTask('tasks', taskId)
-      removeTask('tasksCheck', taskId)
       this.getCurrentTasks(projectId);
     },
     openModalAddTask(){
@@ -206,17 +199,20 @@ export default {
 
 <style lang="scss" scoped>
 .tasks {
-  padding: 15px;
   width: 100%;
+  padding: 15px;
   border-radius: 8px;
   background-color: #ffffff;
   box-shadow: 0 0 15px rgba(0,0,0,.07);
   &__header {
-    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: end;
     border-bottom: 1px solid #d9dbe9;
+    margin-bottom: 10px;
+  }
+  &__name {
+    max-width: 400px;
   }
   &__add-btn {
     margin-bottom: 10px;
@@ -228,11 +224,21 @@ export default {
   &__items {
     position: relative;
     display: flex;
-    padding-right: 25px;
+    padding-right: 12px;
     flex-direction: column;
     max-height: 615px;
     min-height: 615px;
     overflow-y: auto;
+    &::-webkit-scrollbar {
+      height: 3px;
+      width: 4px;
+      border-radius: 100px;
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(125, 133, 154, 0.3);
+      border-radius: 100px;
+    }
   }
   &__item {
     position: relative;
@@ -281,11 +287,13 @@ export default {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 5px;
       padding-right: 5px;
     }
     &__body {
       display: flex;
+      margin-left: -22px;
+      padding-bottom: 12px;
     }
   }
   &__checkbox {
@@ -327,6 +335,20 @@ export default {
     &__icon {
       font-size: 58px;
     }
+    &__text {
+      text-align: center;
+    }
+  }
+  @include _767 {
+    &__header {
+      flex-direction: column;
+      align-items: center;
+    }
+    &__name {
+      text-align: center;
+      max-width: none;
+      margin-bottom: 5px;
+    }
   }
 }
 .list-move,
@@ -336,7 +358,7 @@ export default {
 }
 .list-enter-from {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(20px);
 }
 .list-leave-to {
   opacity: 0;
@@ -346,12 +368,5 @@ export default {
 .list-leave-active {
   position: absolute;
   width: calc(100% - 30px);
-}
-.error-message {
-  position: absolute;
-  bottom: -18px;
-  left: 0;
-  font-size: 12px;
-  color: red;
 }
 </style>

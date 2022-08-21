@@ -1,12 +1,5 @@
 export const addDataToLocalStorage = (localStorageKey, payload) => {
-    let todoArray = [];
-    let localStorageData = localStorage.getItem(localStorageKey);
-
-    if (localStorageData == null) {
-        todoArray = [];
-    } else {
-        todoArray = JSON.parse(localStorageData);
-    }
+    let todoArray = JSON.parse(localStorage.getItem(localStorageKey)) || [];
 
     const createItemObj = (arr) => {
         const itemObj = {};
