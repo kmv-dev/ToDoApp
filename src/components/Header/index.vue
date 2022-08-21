@@ -1,36 +1,27 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <HeaderLogo class="header__logo"/>
-      <DateInfo class="header__info"/>
+      <HeaderLogo class="header__logo" />
+      <DateInfo class="header__info" />
       <div class="header__action">
-        <Form
-            v-if="!isAuth"
-            class="header__form"
-            @submit="addUser"
-        >
+        <Form v-if="!isAuth" class="header__form" @submit="addUser">
           <Field
-              v-model="name"
-              name="name"
-              type="text"
-              class="header__input"
-              :rules="validateName"
-              placeholder="Введите имя"
+            v-model="name"
+            name="name"
+            type="text"
+            class="header__input"
+            :rules="validateName"
+            placeholder="Введите имя"
           />
-          <ErrorMessage
-              name="name"
-              class="error-message"
-          />
-          <BaseButton>
-            Get started
-          </BaseButton>
+          <ErrorMessage name="name" class="error-message" />
+          <BaseButton> Get started </BaseButton>
         </Form>
-        <HelloUser/>
+        <HelloUser />
         <BaseButton
-            v-if="isAuth"
-            class="header__button header__button_logout"
-            :mode="'logout'"
-            @click="removeData"
+          v-if="isAuth"
+          class="header__button header__button_logout"
+          :mode="'logout'"
+          @click="removeData"
         >
           Log out
         </BaseButton>
@@ -43,9 +34,12 @@
 import HeaderLogo from "@/components/HeaderLogo/index.vue";
 import DateInfo from "@/components/DateInfo/index.vue";
 import HelloUser from "@/components/HelloUser/index.vue";
-import { mapActions, mapGetters } from "vuex"
-import { Form, Field, ErrorMessage } from 'vee-validate';
-import { addUserDataToLocalStorage, removeDataToLocalStorage } from "../../utils/api/user";
+import { mapActions, mapGetters } from "vuex";
+import { Form, Field, ErrorMessage } from "vee-validate";
+import {
+  addUserDataToLocalStorage,
+  removeDataToLocalStorage,
+} from "../../utils/api/user";
 export default {
   components: {
     DateInfo,
@@ -53,46 +47,46 @@ export default {
     HelloUser,
     Form,
     Field,
-    ErrorMessage
+    ErrorMessage,
   },
-  data(){
+  data() {
     return {
-      name: '',
-    }
+      name: "",
+    };
   },
   computed: {
     ...mapGetters({
-      isAuth: 'getAuthStatus'
+      isAuth: "getAuthStatus",
     }),
   },
   methods: {
     ...mapActions({
-      handleAddUser: 'addUser',
-      handleAddEditStatus:'addEditStatus',
+      handleAddUser: "addUser",
+      handleAddEditStatus: "addEditStatus",
     }),
-    addUser(){
+    addUser() {
       const payload = {
         name: this.name,
-        isAuth: true
-      }
-      addUserDataToLocalStorage('userData', payload);
+        isAuth: true,
+      };
+      addUserDataToLocalStorage("userData", payload);
       this.handleAddUser(payload);
-      this.name = ''
+      this.name = "";
     },
-    removeData(){
-      if (confirm('Все данные будут удалены! Выйти и очистить?')) {
-        removeDataToLocalStorage('userData')
-        removeDataToLocalStorage('projects')
-        removeDataToLocalStorage('tasks')
+    removeData() {
+      if (confirm("Все данные будут удалены! Выйти и очистить?")) {
+        removeDataToLocalStorage("userData");
+        removeDataToLocalStorage("projects");
+        removeDataToLocalStorage("tasks");
         const payload = {
-          name: '',
-          isAuth: false
-        }
+          name: "",
+          isAuth: false,
+        };
         this.handleAddUser(payload);
         const status = {
-          isEdit: false
-        }
-        this.handleAddEditStatus(status)
+          isEdit: false,
+        };
+        this.handleAddEditStatus(status);
         location.reload();
       }
     },
@@ -100,10 +94,10 @@ export default {
       if (values) {
         return true;
       }
-      return 'Введите ваше имя';
+      return "Введите ваше имя";
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -148,7 +142,8 @@ export default {
     color: #ffffff;
     font-weight: 500;
     transition: 0.1s ease-in-out;
-    box-shadow: 0 4px 5px 0 rgb(0 0 0 / 10%), 0 1px 10px 0 rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 20%);
+    box-shadow: 0 4px 5px 0 rgb(0 0 0 / 10%), 0 1px 10px 0 rgb(0 0 0 / 10%),
+      0 2px 4px -1px rgb(0 0 0 / 20%);
     &:hover {
       transform: translatey(1px);
       box-shadow: none;

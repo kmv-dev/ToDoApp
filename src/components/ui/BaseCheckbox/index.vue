@@ -1,22 +1,16 @@
 <template>
-  <label
-      class="checkbox"
-      :class="{'checkbox_checked': checked}"
-  >
+  <label class="checkbox" :class="{ checkbox_checked: checked }">
     <transition name="bounce">
-      <span
-          v-if="checked"
-          class="checkbox__icon icon-check"
-      />
+      <span v-if="checked" class="checkbox__icon icon-check" />
     </transition>
     <input
-        class="checkbox__input"
-        type="checkbox"
-        :value="value"
-        :checked="checked"
-        @change="evt => onChange(evt.target.value)"
-    >
-    <slot/>
+      class="checkbox__input"
+      type="checkbox"
+      :value="value"
+      :checked="checked"
+      @change="(evt) => onChange(evt.target.value)"
+    />
+    <slot />
   </label>
 </template>
 
@@ -24,21 +18,32 @@
 export default {
   name: "BaseCheckbox",
   props: {
-    value: { type: String, default: null, },
-    modelValue: { type: Array, default: () => [], },
-    checked: { type: Boolean, default: false}
+    value: {
+      type: String,
+      default: null,
+    },
+    modelValue: {
+      type: Array,
+      default: () => [],
+    },
+    checked: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     onChange(value) {
       if (this.modelValue.includes(this?.value)) {
-        this.$emit('update:modelValue', this.modelValue.filter(cv => cv !== value))
+        this.$emit(
+          "update:modelValue",
+          this.modelValue.filter((cv) => cv !== value)
+        );
+      } else {
+        this.$emit("update:modelValue", this.modelValue.concat(value));
       }
-      else {
-        this.$emit('update:modelValue', this.modelValue.concat(value))
-      }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -48,8 +53,8 @@ export default {
   text-align: left;
   cursor: pointer;
   &::before {
-    content: '';
-    background-color: #FFFFFF;
+    content: "";
+    background-color: #ffffff;
     border: 1px solid #d9dbde;
     display: inline-block;
     width: 20px;
@@ -83,7 +88,6 @@ export default {
   animation: bounce-in 0.2s;
 }
 .bounce-leave-active {
-
 }
 @keyframes bounce-in {
   0% {

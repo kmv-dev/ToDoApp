@@ -1,34 +1,23 @@
 <template>
   <div class="projects">
     <BaseModal
-        v-model:isShow="modalVisible"
-        class="projects__modal modal"
-        :title="'Добавить новый список'"
+      v-model:isShow="modalVisible"
+      class="projects__modal modal"
+      :title="'Добавить новый список'"
     >
-      <Form
-          id="modal-project"
-          class="modal__form"
-          @submit="addProject"
-      >
+      <Form id="modal-project" class="modal__form" @submit="addProject">
         <Field
-            v-model="projectName"
-            type="text"
-            class="modal__input"
-            placeholder="Название списка"
-            name="projectName"
-            :rules="validateName"
+          v-model="projectName"
+          type="text"
+          class="modal__input"
+          placeholder="Название списка"
+          name="projectName"
+          :rules="validateName"
         />
-        <ErrorMessage
-            name="projectName"
-            class="error-message"
-        />
+        <ErrorMessage name="projectName" class="error-message" />
       </Form>
       <template #buttonAction>
-        <BaseButton
-            form="modal-project"
-            :type="'submit'"
-            class="modal__btn"
-        >
+        <BaseButton form="modal-project" :type="'submit'" class="modal__btn">
           Добавить
         </BaseButton>
       </template>
@@ -39,40 +28,32 @@
         <span class="title__text">Списки</span>
       </div>
       <BaseButton
-          :isIcon="true"
-          :iconClass="'icon-add_to_queue'"
-          class="title__icon title__icon_plus"
-          @click="openModalAddProject"
-          :disabled="!isAuth"
+        :isIcon="true"
+        :iconClass="'icon-add_to_queue'"
+        class="title__icon title__icon_plus"
+        @click="openModalAddProject"
+        :disabled="!isAuth"
       />
     </div>
-    <div
-        class="projects__items"
-    >
+    <div class="projects__items">
       <TransitionGroup name="list">
         <div
-            class="projects__item item"
-            v-for="(item, i) in projects"
-            :key="item.id"
-            :class="{ item_active: i === activeItem }"
+          class="projects__item item"
+          v-for="(item, index) in projects"
+          :key="item.id"
+          :class="{ item_active: index === activeItem }"
         >
-          <div
-              class="item__inner"
-              @click="getProjectData(item.id, i)"
-          >
+          <div class="item__inner" @click="getProjectData(item.id, index)">
             <span class="item__arrow icon-long_right"></span>
             <span class="item__name">{{ item.name }}</span>
           </div>
           <span
-              class="item__icon icon-trash_full"
-              @click="deleteProject(item.id)"
+            class="item__icon icon-trash_full"
+            @click="deleteProject(item.id)"
           />
         </div>
       </TransitionGroup>
-      <div
-          v-if="!this.projects?.[0]"
-          class="projects__empty empty"
-      >
+      <div v-if="!this.projects?.[0]" class="projects__empty empty">
         <span class="empty__title">Нет списков</span>
         <span class="empty__icon icon-sad"></span>
       </div>
@@ -81,119 +62,119 @@
 </template>
 
 <script>
-import { Form, Field, ErrorMessage } from 'vee-validate';
+import { Form, Field, ErrorMessage } from "vee-validate";
 import {
   addDataToLocalStorage,
   getDataFromLocalStorage,
   removeProjectToLocalStorage,
-  removeProjectTasks
+  removeProjectTasks,
 } from "../../utils/api/projects";
-import {mapActions, mapGetters} from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   components: {
     Form,
     Field,
-    ErrorMessage
+    ErrorMessage,
   },
-  data(){
+  data() {
     return {
-      projectName: '',
+      projectName: "",
       projects: [],
       modalVisible: false,
-      activeItem: 0
-    }
+      activeItem: 0,
+    };
   },
   watch: {
-    modalVisible(){
-      this.projectName = ''
+    modalVisible() {
+      this.projectName = "";
     },
   },
   async mounted() {
     try {
       await this.updateProjectsList();
       if (this.projects) {
-        this.getProjectData(this.projects[0]?.id)
+        this.getProjectData(this.projects[0]?.id);
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   },
   computed: {
     ...mapGetters({
-      isAuth: 'getAuthStatus',
+      isAuth: "getAuthStatus",
     }),
   },
   methods: {
     ...mapActions({
-      addProjectDataToStore: 'addProjectData',
-      addTaskDataToStore: 'addTask'
+      addProjectDataToStore: "addProjectData",
+      addTaskDataToStore: "addTask",
     }),
-    updateProjectsList(){
-      this.projects = getDataFromLocalStorage('projects')?.reverse()
+    updateProjectsList() {
+      this.projects = getDataFromLocalStorage("projects")?.reverse();
     },
-    addProject(){
-      if(this.projectName) {
-        function getRandomId(min, max) {
-          min = Math.ceil(min);
-          max = Math.floor(max);
-          return Math.floor(Math.random() * (max - min)) + min;
-        }
+    addProject() {
+      function getRandomId(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+      if (this.projectName) {
         const payload = {
           name: this.projectName,
-          id: getRandomId(0, 89755738883)
-        }
-        addDataToLocalStorage('projects', payload)
+          id: getRandomId(0, 89755738883),
+        };
+        addDataToLocalStorage("projects", payload);
         this.updateProjectsList();
-        this.getProjectData(this.projects[0]?.id)
-        this.projectName = ''
-        this.modalVisible = false
-        document.body.style.overflow = 'auto';
+        this.getProjectData(this.projects[0]?.id);
+        this.projectName = "";
+        this.modalVisible = false;
+        document.body.style.overflow = "auto";
       }
     },
-    async deleteProject(id){
-      if(confirm('Уверен?')){
-        await removeProjectToLocalStorage('projects', id)
-        await removeProjectTasks('tasks', id)
-        const data = await getDataFromLocalStorage('projects')
-        const tasks = await getDataFromLocalStorage('tasks')
-        const newArr = data.filter(obj => obj.id === id);
-        await this.addProjectDataToStore(newArr)
-        if(tasks !== null) {
-          const filterTasks = tasks.filter(obj => obj.projectId === id);
-          this.addTaskDataToStore(filterTasks)
+    async deleteProject(id) {
+      if (confirm("Уверен?")) {
+        await removeProjectToLocalStorage("projects", id);
+        await removeProjectTasks("tasks", id);
+        const data = await getDataFromLocalStorage("projects");
+        const tasks = await getDataFromLocalStorage("tasks");
+        const newArr = data.filter((obj) => obj.id === id);
+        await this.addProjectDataToStore(newArr);
+        if (tasks !== null) {
+          const filterTasks = tasks.filter((obj) => obj.projectId === id);
+          this.addTaskDataToStore(filterTasks);
         }
         await this.updateProjectsList();
-        this.getProjectData(this.projects[0]?.id)
+        this.getProjectData(this.projects[0]?.id);
       }
     },
-    getProjectData(id, i){
-      const data = getDataFromLocalStorage('projects')
-      const tasks = getDataFromLocalStorage('tasks')
-      if (data.length){
-        const newArr = data.filter(obj => obj.id === id);
-        this.addProjectDataToStore(newArr)
+    getProjectData(id, index) {
+      const data = getDataFromLocalStorage("projects");
+      const tasks = getDataFromLocalStorage("tasks");
+      if (data.length) {
+        const newArr = data.filter((obj) => obj.id === id);
+        this.addProjectDataToStore(newArr);
       }
-      if (tasks?.length){
-        const filterTasks = tasks.filter(obj => obj.projectId === id);
-        this.addTaskDataToStore(filterTasks)
+      if (tasks?.length) {
+        const filterTasks = tasks.filter((obj) => obj.projectId === id);
+        this.addTaskDataToStore(filterTasks);
       }
-      this.selectItem(i || 0)
+      this.selectItem(index || 0);
     },
-    selectItem(i) {
-      this.activeItem = i;
+    selectItem(index) {
+      this.activeItem = index;
     },
-    openModalAddProject(){
-      this.modalVisible = true
-      document.body.style.overflow = 'hidden';
+    openModalAddProject() {
+      this.modalVisible = true;
+      document.body.style.overflow = "hidden";
     },
     validateName(values) {
       if (values) {
         return true;
       }
-      return 'Заполните поле';
+      return "Заполните поле";
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -207,7 +188,7 @@ export default {
   background-size: 120%;
   background-repeat: no-repeat;
   background-position: bottom left;
-  box-shadow: 0 0 15px rgba(0,0,0,.07);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
   &__title-box {
     display: flex;
     justify-content: space-between;
@@ -236,7 +217,7 @@ export default {
       }
     }
   }
-  &__empty{
+  &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -279,20 +260,20 @@ export default {
     cursor: pointer;
     &:before {
       position: absolute;
-      content: '';
+      content: "";
       width: 100%;
       height: 0.5px;
       left: 0;
       bottom: 0;
-      background-color: #E0E0E0;
+      background-color: #e0e0e0;
       transition: 0.1s ease-in-out;
     }
     &:hover .item__icon {
       visibility: visible;
     }
-    &:hover:before{
+    &:hover:before {
       transform: translateX(5px);
-      background-color: #7D859A;
+      background-color: #7d859a;
     }
   }
   .item {
@@ -302,7 +283,7 @@ export default {
     }
     &__icon {
       flex-grow: 0;
-      color: #7D859A;
+      color: #7d859a;
       cursor: pointer;
       visibility: hidden;
     }

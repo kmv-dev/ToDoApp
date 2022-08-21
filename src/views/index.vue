@@ -8,14 +8,14 @@
 </template>
 
 <script>
-import ProjectsList from '@/components/ProjectsList/index.vue'
-import TasksList from '@/components/TasksList/index.vue'
+import ProjectsList from "@/components/ProjectsList/index.vue";
+import TasksList from "@/components/TasksList/index.vue";
 export default {
   components: {
     ProjectsList,
-    TasksList
-  }
-}
+    TasksList,
+  },
+};
 </script>
 
 <style lang="scss">

@@ -1,39 +1,32 @@
 <template>
   <div class="tasks">
     <BaseModal
-        v-model:isShow="modalVisible"
-        class="tasks__modal modal"
-        :title="'Добавить новый список'"
+      v-model:isShow="modalVisible"
+      class="tasks__modal modal"
+      :title="'Добавить новый список'"
     >
       <Form
-          id="modal-tasks"
-          class="modal__form"
-          @submit="addTask(getProjectData[0].id)"
+        id="modal-tasks"
+        class="modal__form"
+        @submit="addTask(getProjectData[0].id)"
       >
         <Field
-            v-model="taskName"
-            type="text"
-            class="modal__input"
-            placeholder="Заголовок задачи"
-            name="taskName"
-            :rules="validateName"
+          v-model="taskName"
+          type="text"
+          class="modal__input"
+          placeholder="Заголовок задачи"
+          name="taskName"
+          :rules="validateName"
         />
-        <ErrorMessage
-            name="taskName"
-            class="error-message"
-        />
+        <ErrorMessage name="taskName" class="error-message" />
         <textarea
-            v-model="description"
-            placeholder="Описание"
-            class="modal__textarea"
+          v-model="description"
+          placeholder="Описание"
+          class="modal__textarea"
         />
       </Form>
       <template #buttonAction>
-        <BaseButton
-            form="modal-tasks"
-            :type="'submit'"
-            class="modal__btn"
-        >
+        <BaseButton form="modal-tasks" :type="'submit'" class="modal__btn">
           Добавить
         </BaseButton>
       </template>
@@ -41,11 +34,11 @@
     <div class="tasks__header">
       <h4 class="tasks__name">#{{ getProjectData[0]?.name }}</h4>
       <BaseButton
-          :isIcon="true"
-          :iconClass="'icon-plus_square'"
-          class="tasks__add-btn"
-          :disabled="!getProjectData[0]?.name || !isAuth"
-          @click="openModalAddTask"
+        :isIcon="true"
+        :iconClass="'icon-plus_square'"
+        class="tasks__add-btn"
+        :disabled="!getProjectData[0]?.name || !isAuth"
+        @click="openModalAddTask"
       >
         Новая задача
       </BaseButton>
@@ -53,27 +46,26 @@
     <div class="tasks__items">
       <TransitionGroup name="list">
         <div
-            v-if="getTasks"
-            v-for="(item, index) in getTasks"
-            :key="item.taskId"
-            class="tasks__item item"
-            :class="{'tasks__item_active': item.done}"
+          v-for="item in getTasks"
+          :key="item.taskId"
+          class="tasks__item item"
+          :class="{ tasks__item_active: item.done }"
         >
           <BaseCheckbox
-              v-model="checked"
-              :value="item.taskId"
-              :id="item.taskId"
-              :checked="item.done"
-              @change="changeTask(item, item.projectId)"
-              class="tasks__checkbox"
+            v-model="checked"
+            :value="item.taskId"
+            :id="item.taskId"
+            :checked="item.done"
+            @change="changeTask(item, item.projectId)"
+            class="tasks__checkbox"
           >
           </BaseCheckbox>
           <div class="item__header">
             <span class="item__title">{{ item.name }}</span>
             <div class="item__action">
               <span
-                  class="item__icon icon-trash_full"
-                  @click="deleteTask(item.taskId, item.projectId)"
+                class="item__icon icon-trash_full"
+                @click="deleteTask(item.taskId, item.projectId)"
               />
             </div>
           </div>
@@ -83,20 +75,11 @@
           </div>
         </div>
       </TransitionGroup>
-      <div
-          v-if="!getTasks?.[0]"
-          class="tasks__empty empty"
-      >
-        <span
-            v-if="!getProjectData[0]?.name"
-            class="empty__text"
-        >
+      <div v-if="!getTasks?.[0]" class="tasks__empty empty">
+        <span v-if="!getProjectData[0]?.name" class="empty__text">
           Создайте список задач
         </span>
-        <span
-            v-else
-            class="empty__text"
-        >
+        <span v-else class="empty__text">
           В списке {{ getProjectData[0]?.name }} нет текущих задач
         </span>
         <span class="empty__icon icon-orders"></span>
@@ -110,9 +93,9 @@ import {
   addDataToLocalStorage,
   getDataFromLocalStorage,
   changeCompleteTask,
-  removeTask
+  removeTask,
 } from "../../utils/api/projects";
-import { OPTIONS } from '@/utils/constants/dateOptions.js'
+import { OPTIONS } from "@/utils/constants/dateOptions.js";
 import { mapActions, mapGetters } from "vuex";
 import { ErrorMessage, Field, Form } from "vee-validate";
 
@@ -120,41 +103,41 @@ export default {
   components: {
     Form,
     Field,
-    ErrorMessage
+    ErrorMessage,
   },
-  data(){
+  data() {
     return {
       isActive: null,
       checked: [],
-      taskName: '',
-      description: '',
+      taskName: "",
+      description: "",
       modalVisible: false,
       clear: false,
-      taskId: null
-    }
+      taskId: null,
+    };
   },
   mounted() {
     this.getCurrentTasks();
   },
   computed: {
     ...mapGetters({
-      getProjectData: 'getProjectData',
-      getTasks: 'getTasks',
-      isAuth: 'getAuthStatus'
+      getProjectData: "getProjectData",
+      getTasks: "getTasks",
+      isAuth: "getAuthStatus",
     }),
   },
   methods: {
     ...mapActions({
-      handleAddTasks: 'addTask'
+      handleAddTasks: "addTask",
     }),
-    async changeTask(item, projectId){
-      await changeCompleteTask(item)
-      this.getCurrentTasks(projectId)
+    async changeTask(item, projectId) {
+      await changeCompleteTask(item);
+      this.getCurrentTasks(projectId);
     },
-    addTask(id){
-      OPTIONS.date.weekday = 'short'
-      const date = new Date().toLocaleDateString('ru-Ru', OPTIONS.date);
-      const time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time);
+    addTask(id) {
+      OPTIONS.date.weekday = "short";
+      const date = new Date().toLocaleDateString("ru-Ru", OPTIONS.date);
+      const time = new Date().toLocaleTimeString("ru-Ru", OPTIONS.time);
       function getRandomId(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -163,38 +146,38 @@ export default {
       const payload = {
         name: this.taskName,
         description: this.description,
-        createDate: date + ' ' + time,
+        createDate: date + " " + time,
         projectId: id,
-        taskId: getRandomId(0, 8987699988876).toString()
-      }
-      addDataToLocalStorage('tasks', payload)
-      this.getCurrentTasks(id)
-      this.modalVisible = false
-      this.taskName = ''
-      this.description = ''
-      document.body.style.overflow = 'auto';
+        taskId: getRandomId(0, 8987699988876).toString(),
+      };
+      addDataToLocalStorage("tasks", payload);
+      this.getCurrentTasks(id);
+      this.modalVisible = false;
+      this.taskName = "";
+      this.description = "";
+      document.body.style.overflow = "auto";
     },
-    getCurrentTasks(id){
-      const data = getDataFromLocalStorage('tasks')
-      const filteredTasks = data?.filter(obj => obj.projectId === id);
-      this.handleAddTasks(filteredTasks)
+    getCurrentTasks(id) {
+      const data = getDataFromLocalStorage("tasks");
+      const filteredTasks = data?.filter((obj) => obj.projectId === id);
+      this.handleAddTasks(filteredTasks);
     },
-    deleteTask(taskId, projectId){
-      removeTask('tasks', taskId)
+    deleteTask(taskId, projectId) {
+      removeTask("tasks", taskId);
       this.getCurrentTasks(projectId);
     },
-    openModalAddTask(){
-      this.modalVisible = true
-      document.body.style.overflow = 'hidden';
+    openModalAddTask() {
+      this.modalVisible = true;
+      document.body.style.overflow = "hidden";
     },
     validateName(values) {
       if (values) {
         return true;
       }
-      return 'Название задачи обязательное поле';
+      return "Название задачи обязательное поле";
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -203,7 +186,7 @@ export default {
   padding: 15px;
   border-radius: 8px;
   background-color: #ffffff;
-  box-shadow: 0 0 15px rgba(0,0,0,.07);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.07);
   &__header {
     display: flex;
     justify-content: space-between;
@@ -247,28 +230,33 @@ export default {
     display: flex;
     flex-direction: column;
     margin: 5px 0;
-    background: linear-gradient(90deg, #FFEDE6 0.01%, rgba(255, 241, 236, 0.49) 0.02%, #F2F0F2 100%);
+    background: linear-gradient(
+      90deg,
+      #ffede6 0.01%,
+      rgba(255, 241, 236, 0.49) 0.02%,
+      #f2f0f2 100%
+    );
     border-radius: 10px;
     transition: 0.3s ease-in-out;
     border: 1px solid transparent;
     &_active {
-      background: linear-gradient(90deg, #E1FFD3 0%, #DCEEFF 100%);
+      background: linear-gradient(90deg, #e1ffd3 0%, #dceeff 100%);
     }
     &:hover {
-      border: 1px solid #5787A4;
+      border: 1px solid #5787a4;
     }
   }
   .item {
     &__icon {
       cursor: pointer;
-      color: #7D859A;
+      color: #7d859a;
       transition: 0.2s ease-in-out;
       &:hover {
         color: #1a1a1a;
       }
     }
     &__title {
-      color: #5787A4;
+      color: #5787a4;
       font-weight: bold;
     }
     &__date {
@@ -276,11 +264,11 @@ export default {
       right: 10px;
       bottom: 0;
       font-size: 12px;
-      color: #7D859A;
+      color: #7d859a;
       opacity: 0.6;
     }
     &__description {
-      color:  #555555;
+      color: #555555;
       font-size: 12px;
     }
     &__header {
@@ -321,7 +309,7 @@ export default {
       min-height: 200px;
     }
   }
-  &__empty{
+  &__empty {
     display: flex;
     flex-direction: column;
     align-items: center;

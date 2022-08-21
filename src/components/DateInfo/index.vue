@@ -8,34 +8,34 @@
 </template>
 
 <script>
-import { OPTIONS } from '@/utils/constants/dateOptions.js'
+import { OPTIONS } from "@/utils/constants/dateOptions.js";
 export default {
-  data(){
+  data() {
     return {
       time: null,
-    }
+    };
   },
   mounted() {
-    this.time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time);
+    this.time = new Date().toLocaleTimeString("ru-Ru", OPTIONS.time);
     this.updateTime();
   },
   computed: {
-    formatDate(){
-      const date = new Date().toLocaleDateString('ru-Ru', OPTIONS.date);
+    formatDate() {
+      const date = new Date().toLocaleDateString("ru-Ru", OPTIONS.date);
       return date.charAt(0).toUpperCase() + date.slice(1);
     },
-    formatTime(){
+    formatTime() {
       return this.time;
-    }
+    },
   },
   methods: {
-    updateTime(){
+    updateTime() {
       setInterval(() => {
-        this.time = new Date().toLocaleTimeString('ru-Ru', OPTIONS.time)
-      }, 1000)
-    }
+        this.time = new Date().toLocaleTimeString("ru-Ru", OPTIONS.time);
+      }, 1000);
+    },
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

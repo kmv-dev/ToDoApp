@@ -1,29 +1,21 @@
 <template>
-    <button
-        class="base-btn"
-        :class="btnClass"
-        :type="type"
-    >
-      <span
-          v-if="isIcon"
-          class="base-btn__icon"
-          :class="iconClass"
-      />
-      <slot />
-    </button>
+  <button class="base-btn" :class="btnClass" :type="type">
+    <span v-if="isIcon" class="base-btn__icon" :class="iconClass" />
+    <slot />
+  </button>
 </template>
 
 <script>
 export default {
-  name: 'BaseButton',
+  name: "BaseButton",
   props: {
     type: {
       type: String,
-      default: '',
+      default: "",
     },
     mode: {
       type: String,
-      default: '',
+      default: "",
     },
     disabled: {
       type: Boolean,
@@ -35,19 +27,16 @@ export default {
     },
     iconClass: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   computed: {
     btnClass() {
-      const {
-        mode,
-        disabled,
-      } = this;
+      const { mode, disabled } = this;
       return [
         {
-          'base-btn_disabled': disabled,
-          'base-btn_logout': mode === 'logout',
+          "base-btn_disabled": disabled,
+          "base-btn_logout": mode === "logout",
         },
       ];
     },
@@ -64,7 +53,8 @@ export default {
   background: linear-gradient(115.67deg, #27b5fe 7.14%, #0078f6 170.42%);
   color: white;
   font-size: 14px;
-  box-shadow: 0 4px 5px 0 rgb(0 0 0 / 10%), 0 1px 10px 0 rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 20%);
+  box-shadow: 0 4px 5px 0 rgb(0 0 0 / 10%), 0 1px 10px 0 rgb(0 0 0 / 10%),
+    0 2px 4px -1px rgb(0 0 0 / 20%);
   transition: 0.2s ease-in-out;
   &:hover {
     box-shadow: none;
@@ -77,8 +67,8 @@ export default {
     opacity: 0.5;
   }
   &_logout {
-    background: #F2F0F2;
-    color: #5787A4;
+    background: #f2f0f2;
+    color: #5787a4;
   }
 }
 </style>

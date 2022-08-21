@@ -5,7 +5,7 @@ import tasks from "./tasks/index.js";
 const store = createStore({
   modules: {
     user,
-    tasks
+    tasks,
   },
 });
 
