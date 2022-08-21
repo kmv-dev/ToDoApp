@@ -62,9 +62,6 @@ export default {
     flex-shrink: 0;
     flex-grow: 0;
     border-radius: 100%;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 50% 50%;
     transition: 0.1s ease-in-out;
   }
   &_checked::before {
@@ -72,9 +69,8 @@ export default {
   }
   &__input {
     position: absolute;
-    z-index: -20;
-    top: 5px;
-    left: 2px;
+    z-index: -1;
+    opacity: 0;
   }
   &__icon {
     position: absolute;
