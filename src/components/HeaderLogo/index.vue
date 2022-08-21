@@ -19,7 +19,7 @@
       color: #f8a915;
       &:after {
         position: absolute;
-        content: '';
+        content: "";
         width: 10px;
         height: 1px;
         right: -23px;
@@ -47,11 +47,23 @@
   }
 }
 @keyframes shakeing {
-  0% { transform: skewY(-12deg); }
-  5% { transform: skewY(12deg); }
-  10% { transform: skewY(-12deg); }
-  15% { transform: skewY(12deg); }
-  20% { transform: skewY(0deg); }
-  100% { transform: skewY(0deg); }
+  0% {
+    transform: skewY(-12deg);
+  }
+  5% {
+    transform: skewY(12deg);
+  }
+  10% {
+    transform: skewY(-12deg);
+  }
+  15% {
+    transform: skewY(12deg);
+  }
+  20% {
+    transform: skewY(0deg);
+  }
+  100% {
+    transform: skewY(0deg);
+  }
 }
 </style>

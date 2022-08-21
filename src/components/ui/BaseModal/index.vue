@@ -1,26 +1,16 @@
 <template>
   <transition name="fade">
-    <div
-        v-if="isShow"
-        class="base-modal"
-        @click="modalHide"
-    >
+    <div v-if="isShow" class="base-modal" @click="modalHide">
       <div class="base-modal__content" @click.stop>
         <div class="base-modal__header header">
           <span class="header__title">{{ title }}</span>
-          <span
-              class="header__close"
-              @click="modalHide"
-          />
+          <span class="header__close" @click="modalHide" />
         </div>
         <div class="base-modal__inner">
           <slot />
         </div>
         <div class="base-modal__buttons">
-          <BaseButton
-              @click="modalHide"
-              class="base-modal__cancel"
-          >
+          <BaseButton @click="modalHide" class="base-modal__cancel">
             Отмена
           </BaseButton>
           <slot name="buttonAction" />
@@ -31,27 +21,25 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
-
 export default {
-  name: 'BaseModal',
+  name: "BaseModal",
   props: {
     isShow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     title: {
       type: String,
-      default: false
-    }
+      default: "",
+    },
   },
   methods: {
-    modalHide(){
-      this.$emit('update:isShow', false)
-      document.body.style.overflow = 'auto';
+    modalHide() {
+      this.$emit("update:isShow", false);
+      document.body.style.overflow = "auto";
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -62,7 +50,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   justify-content: center;
   align-items: center;
   z-index: 10000;
@@ -75,7 +63,7 @@ export default {
     background: white;
     width: 400px;
     height: 300px;
-    border: 0.5px solid #E2E0E0;
+    border: 0.5px solid #e2e0e0;
     box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
   }
@@ -99,7 +87,7 @@ export default {
       }
       &::before,
       &::after {
-        content: '';
+        content: "";
         position: absolute;
         top: 10px;
         display: block;
@@ -126,5 +114,4 @@ export default {
     margin-right: 10px;
   }
 }
-
 </style>

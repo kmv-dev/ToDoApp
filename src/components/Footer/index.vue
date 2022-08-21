@@ -1,9 +1,6 @@
 <template>
   <div class="footer">
-    <a
-        class="footer__link"
-        href="https://storyset.com/work"
-    >
+    <a class="footer__link" href="https://storyset.com/work">
       Work illustrations by Storyset
     </a>
   </div>

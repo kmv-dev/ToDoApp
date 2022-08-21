@@ -1,124 +1,99 @@
 <template>
   <div class="greet" v-if="isAuth">
-    <span
-        v-if="!isEdit"
-        class="greet__hello-text"
-    >
-      Привет
-    </span>
-    <span
-        v-if="!isEdit"
-        class="greet__name"
-    >
+    <span v-if="!isEdit" class="greet__hello-text"> Привет </span>
+    <span v-if="!isEdit" class="greet__name">
       {{ userName }}
     </span>
-    <span
-        v-if="!isEdit"
-        class="greet__text">
-      !
-    </span>
-    <Form
-        class="greet__form"
-        @submit="addNewName"
-    >
+    <span v-if="!isEdit" class="greet__text"> ! </span>
+    <Form class="greet__form" @submit="addNewName">
       <Field
-          v-if="isEdit"
-          v-model="newName"
-          name="name"
-          type="text"
-          class="greet__input"
-          :rules="validateName"
-          placeholder="Введите имя"
+        v-if="isEdit"
+        v-model="newName"
+        name="name"
+        type="text"
+        class="greet__input"
+        :rules="validateName"
+        placeholder="Введите имя"
       />
-      <ErrorMessage
-          name="name"
-          class="error-message"
-      />
-      <span
-          v-if="!isEdit"
-          class="greet__icon icon-edit"
-          @click="editName"
-      />
-      <button
-          v-else
-          class="greet__button"
-          type="submit"
-
-      >
+      <ErrorMessage name="name" class="error-message" />
+      <span v-if="!isEdit" class="greet__icon icon-edit" @click="editName" />
+      <button v-else class="greet__button" type="submit">
         <span class="greet__icon greet__icon_btn icon-refresh"></span>
       </button>
-
     </Form>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { addUserDataToLocalStorage, getUserDataFromLocalStorage } from "../../utils/api/user";
-import { Form, Field, ErrorMessage } from 'vee-validate';
+import {
+  addUserDataToLocalStorage,
+  getUserDataFromLocalStorage,
+} from "../../utils/api/user";
+import { Form, Field, ErrorMessage } from "vee-validate";
 
 export default {
   components: {
     Form,
     Field,
-    ErrorMessage
+    ErrorMessage,
   },
-  data(){
+  data() {
     return {
-      newName: '',
-    }
+      newName: "",
+    };
   },
   mounted() {
     this.update();
   },
   computed: {
     ...mapGetters({
-      userName: 'getUserName',
-      isAuth: 'getAuthStatus',
-      isEdit: 'getEditNameStatus'
+      userName: "getUserName",
+      isAuth: "getAuthStatus",
+      isEdit: "getEditNameStatus",
     }),
   },
-  methods:{
+  methods: {
     ...mapActions({
-      handleAddUser: 'addUser',
-      handleAddEditStatus: 'addEditStatus'
+      handleAddUser: "addUser",
+      handleAddEditStatus: "addEditStatus",
     }),
-    update(){
-      const data = getUserDataFromLocalStorage('userData');
+    update() {
+      const data = getUserDataFromLocalStorage("userData");
       const payload = {
         name: data?.name,
-        isAuth: data?.isAuth
-      }
+        isAuth: data?.isAuth,
+      };
       this.handleAddUser(payload);
-      this.newName = ''
+      this.newName = "";
     },
-    editName(){
-      this.newName = ''
+    editName() {
+      this.newName = "";
       const payload = {
-        isEdit: true
-      }
-      this.handleAddEditStatus(payload)
+        isEdit: true,
+      };
+      this.handleAddEditStatus(payload);
     },
-    addNewName(){
+    addNewName() {
       const payload = {
         name: this.newName,
-        isAuth: true
-      }
-      addUserDataToLocalStorage('userData', payload);
+        isAuth: true,
+      };
+      addUserDataToLocalStorage("userData", payload);
       this.handleAddUser(payload);
-      this.newName = ''
+      this.newName = "";
       const status = {
-        isEdit: false
-      }
-      this.handleAddEditStatus(status)
+        isEdit: false,
+      };
+      this.handleAddEditStatus(status);
     },
     validateName(values) {
       if (values) {
         return true;
       }
-      return 'Пустое значение';
+      return "Пустое значение";
     },
-  }
+  },
 };
 </script>
 

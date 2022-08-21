@@ -1,6 +1,6 @@
 export default () => ({
   user: {
-    name: '',
+    name: "",
     isAuth: false,
     isEditStatus: false,
   },
