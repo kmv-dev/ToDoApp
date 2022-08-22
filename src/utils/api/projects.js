@@ -57,3 +57,14 @@ export const changeCompleteTask = (item) => {
   });
   localStorage.setItem("tasks", JSON.stringify(todoArray));
 };
+
+export const editTask = (payload) => {
+  const todoArray = JSON.parse(localStorage.getItem("tasks"));
+  todoArray.map((obj) => {
+    if (obj.taskId === payload.taskId) {
+      obj.name = payload.name;
+      obj.description = payload.description;
+    }
+  });
+  localStorage.setItem("tasks", JSON.stringify(todoArray));
+};
