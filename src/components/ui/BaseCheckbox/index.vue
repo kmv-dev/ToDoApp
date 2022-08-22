@@ -1,9 +1,8 @@
 <template>
   <label class="checkbox" :class="{ checkbox_checked: checked }">
-    <span
-      class="checkbox__icon icon-check"
-      :class="{ checkbox__icon_checked: checked }"
-    />
+    <transition name="bounce">
+      <span v-if="checked" class="checkbox__icon icon-check" />
+    </transition>
     <input
       class="checkbox__input"
       type="checkbox"
@@ -53,6 +52,7 @@ export default {
   display: block;
   text-align: left;
   cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   &::before {
     content: "";
     background-color: #ffffff;
@@ -64,6 +64,7 @@ export default {
     flex-grow: 0;
     border-radius: 100%;
     transition: 0.1s ease-in-out;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   }
   &_checked::before {
     border: 2px solid #339966;
@@ -79,11 +80,21 @@ export default {
     left: -1px;
     font-size: 26px;
     color: #373435;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-    &_checked {
-      opacity: 1;
-    }
+  }
+}
+.bounce-enter-active {
+  animation: bounce-in 0.2s ease-in-out;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 </style>
