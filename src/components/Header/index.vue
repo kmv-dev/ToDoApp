@@ -161,6 +161,7 @@ export default {
     &__inner {
       display: flex;
       flex-direction: column;
+      padding: 5px 15px;
     }
     &__info {
       position: absolute;

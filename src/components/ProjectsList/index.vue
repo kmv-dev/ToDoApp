@@ -223,7 +223,7 @@ export default {
     align-items: center;
   }
   .empty {
-    padding-top: 200px;
+    padding-top: 30px;
     color: #d9dbde;
     &__title {
       font-size: 20px;
