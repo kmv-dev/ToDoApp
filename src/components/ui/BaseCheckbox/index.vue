@@ -1,8 +1,9 @@
 <template>
   <label class="checkbox" :class="{ checkbox_checked: checked }">
-    <transition name="bounce">
-      <span v-if="checked" class="checkbox__icon icon-check" />
-    </transition>
+    <span
+      class="checkbox__icon icon-check"
+      :class="{ checkbox__icon_checked: checked }"
+    />
     <input
       class="checkbox__input"
       type="checkbox"
@@ -78,22 +79,11 @@ export default {
     left: -1px;
     font-size: 26px;
     color: #373435;
-  }
-}
-.bounce-enter-active {
-  animation: bounce-in 0.2s;
-}
-.bounce-leave-active {
-}
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.25);
-  }
-  100% {
-    transform: scale(1);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    &_checked {
+      opacity: 1;
+    }
   }
 }
 </style>
