@@ -46,7 +46,7 @@
     <div class="tasks__items">
       <TransitionGroup name="list">
         <div
-          v-for="item in getTasks"
+          v-for="(item, index) in getTasks"
           :key="item.taskId"
           class="tasks__item item"
           :class="{ tasks__item_active: item.done }"
@@ -61,8 +61,26 @@
           >
           </BaseCheckbox>
           <div class="item__header">
-            <span class="item__title">{{ item.name }}</span>
+            <input
+              v-if="itemActive === index"
+              v-model="item.name"
+              class="item__title"
+              :class="{ item__input: itemActive === index }"
+            />
+            <span v-if="itemActive !== index" class="item__title">{{
+              item.name
+            }}</span>
             <div class="item__action">
+              <span
+                v-if="itemActive !== index"
+                class="item__icon item__icon_edit icon-edit"
+                @click="editActivate(index)"
+              />
+              <span
+                v-if="itemActive === index"
+                class="item__icon item__icon_edit icon-refresh_02"
+                @click="edit(item)"
+              />
               <span
                 class="item__icon icon-trash_full"
                 @click="deleteTask(item.taskId, item.projectId)"
@@ -70,7 +88,15 @@
             </div>
           </div>
           <div class="item__body">
-            <span class="item__description">{{ item.description }}</span>
+            <textarea
+              v-if="itemActive === index"
+              v-model="item.description"
+              class="item__description"
+              :class="{ item__textarea: itemActive === index }"
+            ></textarea>
+            <span v-if="itemActive !== index" class="item__description">{{
+              item.description
+            }}</span>
             <span class="item__date">{{ item.createDate }}</span>
           </div>
         </div>
@@ -94,6 +120,7 @@ import {
   getDataFromLocalStorage,
   changeCompleteTask,
   removeTask,
+  editTask,
 } from "../../utils/api/projects";
 import { OPTIONS } from "@/utils/constants/dateOptions.js";
 import { mapActions, mapGetters } from "vuex";
@@ -112,6 +139,7 @@ export default {
       taskName: "",
       description: "",
       modalVisible: false,
+      itemActive: null,
       clear: false,
       taskId: null,
     };
@@ -156,6 +184,20 @@ export default {
       this.taskName = "";
       this.description = "";
       document.body.style.overflow = "auto";
+    },
+    editActivate(index) {
+      this.itemActive = index;
+    },
+    edit(item) {
+      const payload = {
+        name: item.name,
+        description: item.description,
+        createDate: item.createDate,
+        projectId: item.projectId,
+        taskId: item.taskId,
+      };
+      editTask(payload);
+      this.itemActive = null;
     },
     getCurrentTasks(id) {
       const data = getDataFromLocalStorage("tasks");
@@ -204,6 +246,11 @@ export default {
     width: 500px;
     height: 450px;
   }
+  &__checkbox {
+    position: absolute;
+    left: 5px;
+    top: 8px;
+  }
   &__items {
     position: relative;
     display: flex;
@@ -247,17 +294,11 @@ export default {
     }
   }
   .item {
-    &__icon {
-      cursor: pointer;
-      color: #7d859a;
-      transition: 0.2s ease-in-out;
-      &:hover {
-        color: #1a1a1a;
-      }
-    }
     &__title {
       color: #5787a4;
       font-weight: bold;
+      word-break: break-word;
+      margin-right: 10px;
     }
     &__date {
       position: absolute;
@@ -270,11 +311,25 @@ export default {
     &__description {
       color: #555555;
       font-size: 12px;
+      word-break: break-word;
+    }
+    &__input {
+      border: none;
+      padding: 5px;
+      box-shadow: 0px 0px 8px 0px rgba(34, 60, 80, 0.2);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    &__textarea {
+      border: none;
+      padding: 5px;
+      box-shadow: 0px 0px 8px 0px rgba(34, 60, 80, 0.2);
+      border-radius: 8px;
     }
     &__header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-bottom: 5px;
       padding-right: 5px;
     }
@@ -283,11 +338,17 @@ export default {
       margin-left: -22px;
       padding-bottom: 12px;
     }
-  }
-  &__checkbox {
-    position: absolute;
-    left: 5px;
-    top: 8px;
+    &__icon {
+      cursor: pointer;
+      color: #7d859a;
+      transition: 0.2s ease-in-out;
+      &:hover {
+        color: #1a1a1a;
+      }
+      &_edit {
+        margin-right: 20px;
+      }
+    }
   }
   .modal {
     &__form {
@@ -313,13 +374,10 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .empty {
     padding-top: 200px;
     color: #d9dbde;
-    &__title {
-      font-size: 20px;
-    }
+  }
+  .empty {
     &__icon {
       font-size: 58px;
     }
@@ -337,6 +395,13 @@ export default {
       max-width: none;
       margin-bottom: 5px;
     }
+    .item {
+      &__textarea {
+        max-width: 200px;
+        min-width: 200px;
+        min-height: 50px;
+      }
+    }
   }
 }
 .list-move,
@@ -346,7 +411,7 @@ export default {
 }
 .list-enter-from {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(-20px);
 }
 .list-leave-to {
   opacity: 0;
